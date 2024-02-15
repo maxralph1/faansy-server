@@ -20,7 +20,13 @@ class CardController extends Controller
      */
     public function index()
     {
-        $cards = Card::where('user_id', auth()->user()->id)->latest()->paginate();
+        $cards = Card::with([
+            'user',
+            'walletfunding'
+        ])
+            ->where('user_id', auth()->user()->id)
+            ->latest()
+            ->paginate();
 
         return CardResource::collection($cards);
     }

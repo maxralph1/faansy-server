@@ -22,7 +22,7 @@ class StoreWalletRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|ulid',
+            // 'user_id' => 'required|ulid',
             'balance' => 'required|numeric',
         ];
     }

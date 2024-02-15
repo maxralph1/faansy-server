@@ -23,7 +23,7 @@ class UpdateUserlikeRequest extends FormRequest
     {
         return [
             'liked_id' => 'nullable|ulid',
-            'liker_id' => 'nullable|ulid',
+            // 'liker_id' => 'nullable|ulid',
         ];
     }
 }

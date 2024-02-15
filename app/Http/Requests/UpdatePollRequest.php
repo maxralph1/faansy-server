@@ -22,9 +22,12 @@ class UpdatePollRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|ulid',
             'questionnaire' => 'required|string',
             'close_time' => 'nullable|date_format',
+            'poll_option_1' => 'nullable|string',
+            'poll_option_2' => 'nullable|string',
+            'poll_option_3' => 'nullable|string',
+            'poll_option_4' => 'nullable|string',
         ];
     }
 }

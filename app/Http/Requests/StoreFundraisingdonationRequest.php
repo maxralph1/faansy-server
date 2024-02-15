@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTransactionRequest extends FormRequest
+class StoreFundraisingdonationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,8 @@ class StoreTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'beneficiary_id' => 'required|ulid',
-            'transactor_id' => 'required|ulid',
-            'transaction_type' => 'nullable|in:pay_per_view,subscription,tip,stream_tips,commission,vat',
-            'amount' => 'required|numeric',
+            'fundraising_id' => 'required|ulid',
+            'amount_donated' => 'required|numeric'
         ];
     }
 }

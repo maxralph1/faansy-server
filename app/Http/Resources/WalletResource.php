@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\WalletfundingResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WalletResource extends JsonResource
@@ -27,6 +28,7 @@ class WalletResource extends JsonResource
                 'user_image_url' => $this->user->user_image_url,
                 'verified' => $this->user->verified,
             ],
+            'walletfundings' => WalletfundingResource::collection($this->walletfundings),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,

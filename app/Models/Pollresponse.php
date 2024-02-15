@@ -14,10 +14,20 @@ class Pollresponse extends Model
 
     protected $fillable = [
         'poll_id',
+        'poll_option_selection_id',
         'user_id',
-        'poll_option_selection',
         'text_response',
     ];
+
+    public function polloption(): BelongsTo
+    {
+        return $this->belongsTo(Polloption::class, 'poll_option_selection_id');
+    }
+
+    public function poll(): BelongsTo
+    {
+        return $this->belongsTo(Poll::class);
+    }
 
     public function user(): BelongsTo
     {

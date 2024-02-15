@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePolloptionRequest extends FormRequest
+class StoreFundwithdrawalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,7 @@ class StorePolloptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'poll_id' => 'required|ulid',
-            'user_id' => 'required|ulid',
-            'option' => 'required|string',
+            'amount_withdrawn' => 'required|numeric'
         ];
     }
 }

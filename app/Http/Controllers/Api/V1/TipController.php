@@ -4,15 +4,15 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Tip;
 use App\Models\Wallet;
+use App\Models\Fanactivity;
 use App\Models\Transaction;
 use App\Models\Notification;
-use App\Models\Internaltransaction;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\TipResource;
+use App\Models\Internaltransaction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTipRequest;
 use App\Http\Requests\UpdateTipRequest;
-use App\Models\Fundflow;
 
 class TipController extends Controller
 {
@@ -26,8 +26,11 @@ class TipController extends Controller
      */
     public function index()
     {
-        $tips = Tip::where('recipient_id', auth()->id)
-            ->orWhere('donor_id', auth()->id)
+        $tips = Tip::with([
+            'recipient',
+            'donor'
+        ])->where('recipient_id', auth()->user()->id)
+            ->orWhere('donor_id', auth()->user()->id)
             ->latest()
             ->paginate();
 
@@ -91,6 +94,26 @@ class TipController extends Controller
                     'reference_id_to_resource' => $tip->id,
                     'reference_id_to_transaction' => $transaction->id,
                 ]);
+
+                // Add the donor as a fan, if they're already not
+                $already_a_fan = Fanactivity::where([
+                    'creator_id' => $tip->recipient_id,
+                    'fan_id' => $tip->donor_id
+                ])->first();
+
+                if (!$already_a_fan) {
+                    Fanactivity::create([
+                        'fan_id' => $tip->donor_id,
+                        'creator_id' => $tip->recipient_id,
+                        'amount_paid_in_tip' => $tip->amount * 100,
+                        'cumulative_amount_spent_on_creator_by_fan' => $tip->amount * 100
+                    ]);
+                } elseif ($already_a_fan) {
+                    $already_a_fan->update([
+                        'amount_paid_in_tip' => $tip->amount * 100,
+                        'cumulative_amount_spent_on_creator_by_fan' => $already_a_fan->cumulative_amount_spent_on_creator_by_fan + ($tip->amount * 100),
+                    ]);
+                }
 
                 return new TipResource($tip);
 

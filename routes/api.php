@@ -12,18 +12,23 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\BlockController;
 use App\Http\Controllers\Api\V1\StoryController;
 use App\Http\Controllers\Api\V1\WalletController;
+use App\Http\Controllers\Api\V1\FanlistController;
 use App\Http\Controllers\Api\V1\MessageController;
 use App\Http\Controllers\Api\V1\BookmarkController;
 use App\Http\Controllers\Api\V1\PostlikeController;
 use App\Http\Controllers\Api\V1\RestrictController;
 use App\Http\Controllers\Api\V1\UserlikeController;
 use App\Http\Controllers\Api\V1\PolloptionController;
+use App\Http\Controllers\Api\V1\FanactivityController;
+use App\Http\Controllers\Api\V1\FundraisingController;
 use App\Http\Controllers\Api\V1\PostcommentController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PollresponseController;
 use App\Http\Controllers\Api\V1\SubscriptionController;
 use App\Http\Controllers\Api\V1\WalletfundingController;
+use App\Http\Controllers\Api\V1\FundwithdrawalController;
+use App\Http\Controllers\Api\V1\FundraisingdonationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,10 +67,10 @@ Route::controller(BlockController::class)->group(function () {
 Route::apiResource('blocks', BlockController::class);
 
 // Bookmark
-// Route::controller(BookmarkController::class)->group(function () {
-//     // Route::patch('bookmarks/{bookmark}/restore', 'restore');
-//     // Route::delete('bookmarks/{bookmark}/delete', 'forceDestroy');
-// });
+Route::controller(BookmarkController::class)->group(function () {
+    Route::patch('bookmarks/{bookmark}/restore', 'restore');
+    Route::delete('bookmarks/{bookmark}/delete', 'forceDestroy');
+});
 Route::apiResource('bookmarks', BookmarkController::class);
 
 // Card
@@ -81,6 +86,41 @@ Route::controller(ChatController::class)->group(function () {
     Route::delete('chats/{chat}/delete', 'forceDestroy');
 });
 Route::apiResource('chats', ChatController::class);
+
+// Fanactivity
+Route::controller(FanactivityController::class)->group(function () {
+    Route::patch('fanactivities/{fanactivity}/restore', 'restore');
+    Route::delete('fanactivities/{fanactivity}/delete', 'forceDestroy');
+});
+Route::apiResource('fanactivities', FanactivityController::class);
+
+// Fanlist
+Route::controller(FanlistController::class)->group(function () {
+    Route::patch('fanlists/{fanlist}/restore', 'restore');
+    Route::delete('fanlists/{fanlist}/delete', 'forceDestroy');
+});
+Route::apiResource('fanlists', FanlistController::class);
+
+// Fundraising
+Route::controller(FundraisingController::class)->group(function () {
+    Route::patch('fundraisings/{fundraising}/restore', 'restore');
+    Route::delete('fundraisings/{fundraising}/delete', 'forceDestroy');
+});
+Route::apiResource('fundraisings', FundraisingController::class);
+
+// Fundraisingdonation
+Route::controller(FundraisingdonationController::class)->group(function () {
+    Route::patch('fundraisingdonations/{fundraisingdonation}/restore', 'restore');
+    Route::delete('fundraisingdonations/{fundraisingdonation}/delete', 'forceDestroy');
+});
+Route::apiResource('fundraisingdonations', FundraisingdonationController::class);
+
+// Fundwithdrawal
+Route::controller(FundwithdrawalController::class)->group(function () {
+    Route::patch('fundwithdrawals/{fundwithdrawal}/restore', 'restore');
+    Route::delete('fundwithdrawals/{fundwithdrawal}/delete', 'forceDestroy');
+});
+Route::apiResource('fundwithdrawals', FundwithdrawalController::class);
 
 // Message
 Route::controller(MessageController::class)->group(function () {

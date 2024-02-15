@@ -23,7 +23,7 @@ class UpdateSubscriptionRequest extends FormRequest
     {
         return [
             'subscribed_id' => 'nullable|ulid',
-            'subscriber_id' => 'nullable|ulid',
+            // 'subscriber_id' => 'nullable|ulid',
             'subscription_amount_paid' => 'required|numeric',
         ];
     }

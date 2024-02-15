@@ -18,6 +18,11 @@ class Polloption extends Model
         'option',
     ];
 
+    public function poll(): BelongsTo
+    {
+        return $this->belongsTo(Poll::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

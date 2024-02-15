@@ -20,7 +20,10 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $transactions = Transaction::where('beneficiary_id', auth()->user()->id)
+        $transactions = Transaction::with([
+            'beneficiary',
+            'transactor'
+        ])->where('beneficiary_id', auth()->user()->id)
             ->orWhere('transactor_id', auth()->user()->id)
             ->latest()
             ->paginate();

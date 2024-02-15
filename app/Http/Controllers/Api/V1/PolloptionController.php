@@ -10,24 +10,23 @@ use App\Http\Requests\UpdatePolloptionRequest;
 
 class PolloptionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $polloptions = Polloption::latest()->paginate();
+        $polloptions = Polloption::with([
+            'poll',
+            'poll.user',
+            'user'
+        ])->latest()->paginate();
 
         return PolloptionResource::collection($polloptions);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePolloptionRequest $request)
-    {
-        $polloption = Polloption::create($request->validated());
-
-        return new PolloptionResource($polloption);
     }
 
     /**

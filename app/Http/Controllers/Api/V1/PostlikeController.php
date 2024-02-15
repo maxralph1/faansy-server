@@ -10,12 +10,21 @@ use App\Http\Requests\UpdatePostlikeRequest;
 
 class PostlikeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $postlikes = Postlike::withTrashed()->latest()->paginate();
+        $postlikes = Postlike::with([
+            'post',
+            'post.user',
+            'user',
+        ])->latest()->paginate();
 
         return PostlikeResource::collection($postlikes);
     }

@@ -12,7 +12,7 @@ class UserlikeController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
     }
 
     /**
@@ -20,7 +20,10 @@ class UserlikeController extends Controller
      */
     public function index()
     {
-        $userlikes = Userlike::where('liker_id', auth()->id)
+        $userlikes = Userlike::with([
+            'liked',
+            'liker'
+        ])->where('liker_id', auth()->id)
             ->orWhere('liked_id', auth()->id)
             ->latest()
             ->paginate();

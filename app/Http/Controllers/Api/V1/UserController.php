@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -86,8 +91,22 @@ class UserController extends Controller
     {
         $creator_role = Role::where('title', 'creator')->first();
 
-        $creators = User::where('role_id', $creator_role->id)->inRandomOrder()
-            ->get();
+        $creators = User::with([
+            'role',
+            'profile',
+            'posts',
+            'posts.comments',
+            'postcomments',
+            'posts.likes',
+            'postlikes',
+            // 'livestreams',
+            // 'livestreamcomments',
+            // 'livestreamlikes',
+            'userlikers',
+            'subscribed',
+
+        ])->where('role_id', $creator_role->id)->inRandomOrder()
+            ->take(10)->get();
 
         // return UserCollection::collection($creators);
         return UserResource::collection($creators);

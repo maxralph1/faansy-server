@@ -11,7 +11,7 @@ class StoreFundraisingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreFundraisingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'amount_expected' => 'required|numeric',
+            'amount_raised' => 'required|numeric'
         ];
     }
 }

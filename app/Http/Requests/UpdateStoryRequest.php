@@ -22,7 +22,7 @@ class UpdateStoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'nullable|ulid',
+            // 'user_id' => 'nullable|ulid',
             'body' => 'nullable|string',
             'video_url' => 'nullable|mimetypes:video/avi,video/mp4,video/mpeg,video/quicktime',
         ];

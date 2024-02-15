@@ -22,7 +22,7 @@ class UpdateCardRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|ulid',
+            // 'user_id' => 'required|ulid',
             'country' => 'nullable|string',
             'state_province' => 'nullable|string',
             'address' => 'nullable|string',

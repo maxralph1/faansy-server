@@ -20,7 +20,13 @@ class ChatController extends Controller
      */
     public function index()
     {
-        $chats = Chat::where('participator_1_id', auth()->user()->id)
+        $chats = Chat::with([
+            'participator_1',
+            'participator_2',
+            'messages',
+            'messages.user'
+        ])
+            ->where('participator_1_id', auth()->user()->id)
             ->orWhere('participator_2_id', auth()->user()->id)
             ->latest()
             ->paginate();

@@ -2,19 +2,35 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Models\Fanlist;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\FanlistResource;
 use App\Http\Requests\StoreFanlistRequest;
 use App\Http\Requests\UpdateFanlistRequest;
 
 class FanlistController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $fanlist = Fanlist::with([
+            'user',
+            'fanactivities',
+            'fanactivities.fan',
+            'fanactivities.creator'
+        ])
+            ->where('user_id', auth()->user()->id)
+            ->latest()
+            ->paginate();
+
+        return FanlistResource::collection($fanlist);
     }
 
     /**
@@ -22,7 +38,9 @@ class FanlistController extends Controller
      */
     public function store(StoreFanlistRequest $request)
     {
-        //
+        $fanlist = Fanlist::create($request->validated());
+
+        return new FanlistResource($fanlist);
     }
 
     /**
@@ -30,7 +48,7 @@ class FanlistController extends Controller
      */
     public function show(Fanlist $fanlist)
     {
-        //
+        return new FanlistResource($fanlist);
     }
 
     /**
@@ -38,7 +56,9 @@ class FanlistController extends Controller
      */
     public function update(UpdateFanlistRequest $request, Fanlist $fanlist)
     {
-        //
+        $fanlist->update($request->validated());
+
+        return new FanlistResource($fanlist);
     }
 
     /**
@@ -46,6 +66,22 @@ class FanlistController extends Controller
      */
     public function destroy(Fanlist $fanlist)
     {
-        //
+        $fanlist->delete();
+    }
+
+    /**
+     * Restore the specified deleted resource.
+     */
+    public function restore(Fanlist $fanlist)
+    {
+        $fanlist->restore();
+    }
+
+    /**
+     * Permanently remove the specified resource from storage.
+     */
+    public function forceDestroy(Fanlist $fanlist)
+    {
+        $fanlist->forceDelete();
     }
 }

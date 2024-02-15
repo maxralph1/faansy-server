@@ -24,7 +24,6 @@ class UpdatePollresponseRequest extends FormRequest
         return [
             'poll_id' => 'required|ulid',
             'polloption_id' => 'nullable|ulid',
-            'user_id' => 'required|ulid',
             'text_response' => 'nullable|string',
         ];
     }

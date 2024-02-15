@@ -22,8 +22,8 @@ class StoreWalletfundingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|ulid',
-            'wallet_id' => 'required|ulid',
+            // 'user_id' => 'required|ulid',
+            // 'wallet_id' => 'required|ulid',
             'amount_funded' => 'required|numeric',
         ];
     }

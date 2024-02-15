@@ -21,6 +21,8 @@ class PostResource extends JsonResource
         return [
             'id' => $this->id,
             'body' => $this->body,
+            'pay_per_view' => $this->pay_per_view,
+            'pay_per_view_amount' => $this->pay_per_view_amount,
             // 'image_url' => $this->image_url,
             'image_url' => $this->when($this->pay_per_view == false, $this->image_url),
             // 'video_url' => $this->video_url,
@@ -39,8 +41,6 @@ class PostResource extends JsonResource
             'comments' => PostcommentResource::collection($this->comments),
             'likes' => PostlikeResource::collection($this->likes),
             'bookmarks' => BookmarkResource::collection($this->bookmarks),
-            'pay_per_view' => $this->pay_per_view,
-            'pay_per_view_amount' => $this->pay_per_view_amount,
             'repost' => $this->repost,
             'repost_original_id' => $this->repost_original_id,
             'repost_body' => $this->repost_body,

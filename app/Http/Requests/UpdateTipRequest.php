@@ -23,7 +23,7 @@ class UpdateTipRequest extends FormRequest
     {
         return [
             'recipient_id' => 'nullable|ulid',
-            'donor_id' => 'nullable|ulid',
+            // 'donor_id' => 'nullable|ulid',
             'amount' => 'nullable|numeric',
         ];
     }

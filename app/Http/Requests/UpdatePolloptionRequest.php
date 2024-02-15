@@ -23,7 +23,7 @@ class UpdatePolloptionRequest extends FormRequest
     {
         return [
             'poll_id' => 'required|ulid',
-            'user_id' => 'required|ulid',
+            // 'user_id' => 'required|ulid',
             'option' => 'required|string',
         ];
     }

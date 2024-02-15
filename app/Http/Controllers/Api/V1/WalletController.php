@@ -89,7 +89,10 @@ class WalletController extends Controller
      */
     public function myWallet()
     {
-        $wallet = Wallet::where('user_id', auth()->id)
+        $wallet = Wallet::with([
+            'user',
+            'walletfundings'
+        ])->where('user_id', auth()->id)
             ->latest()
             ->paginate();
 

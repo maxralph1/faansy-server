@@ -23,7 +23,7 @@ class StoreUserlikeRequest extends FormRequest
     {
         return [
             'liked_id' => 'required|ulid',
-            'liker_id' => 'required|ulid',
+            // 'liker_id' => 'required|ulid',
         ];
     }
 }

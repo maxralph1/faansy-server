@@ -15,12 +15,24 @@ class Walletfunding extends Model
 
     protected $fillable = [
         'user_id',
+        'card_id',
+        'wallet_id',
         'amount_funded',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function card(): BelongsTo
+    {
+        return $this->belongsTo(Card::class);
+    }
+
+    public function wallet(): BelongsTo
+    {
+        return $this->belongsTo(Wallet::class);
     }
 
     public function amount_funded(): Attribute

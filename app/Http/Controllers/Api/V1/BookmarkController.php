@@ -22,7 +22,16 @@ class BookmarkController extends Controller
     public function index()
     {
         // $bookmarks = Bookmark::latest()->paginate();
-        $bookmarks = Bookmark::where('user_id', auth()->user()->id)->latest()->paginate();
+        $bookmarks = Bookmark::with([
+            'user',
+            'post',
+            'post.user',
+            'post.comments',
+            'post.likes'
+        ])
+            ->where('user_id', auth()->user()->id)
+            ->latest()
+            ->paginate();
 
         return BookmarkResource::collection($bookmarks);
     }

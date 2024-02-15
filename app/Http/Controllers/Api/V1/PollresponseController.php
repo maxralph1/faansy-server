@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Poll;
+use App\Models\Polloption;
 use App\Models\Pollresponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PollresponseResource;
@@ -10,12 +12,24 @@ use App\Http\Requests\UpdatePollresponseRequest;
 
 class PollresponseController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $pollresponses = Pollresponse::latest()->paginate();
+        $pollresponses = Pollresponse::with([
+            'poll',
+            'poll.user',
+            'polloption',
+            'polloption.poll',
+            'polloption.user',
+            'user'
+        ])->latest()->paginate();
 
         return PollresponseResource::collection($pollresponses);
     }
@@ -25,7 +39,19 @@ class PollresponseController extends Controller
      */
     public function store(StorePollresponseRequest $request)
     {
-        $pollresponse = Pollresponse::create($request->validated());
+        $validated = $request->validated();
+
+        $pollresponse = new Pollresponse();
+
+        $poll_exists = Poll::find($validated['poll_id']);
+        $polloption_exists = Polloption::find($validated['polloption_id']);
+
+        Pollresponse::create([
+            $pollresponse['poll_id'] = $poll_exists->id,
+            $pollresponse['user_id'] = auth()->user()->id,
+            $pollresponse['poll_option_selection'] = $polloption_exists->id,
+            ($request->text_response) && $pollresponse['text_response'] = $validated['text_response']
+        ]);
 
         return new PollresponseResource($pollresponse);
     }

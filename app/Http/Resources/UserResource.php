@@ -55,9 +55,9 @@ class UserResource extends JsonResource
             'posts' => PostResource::collection($this->posts),
             'postcomments' => $this->postcomments,
             'postlikes' => $this->postlikes,
-            'streams' => $this?->streams,
-            'streamcomments' => $this?->streamcomments,
-            'streamlikes' => $this?->streamlikes,
+            // 'livestreams' => $this?->livestreams,
+            // 'livestreamcomments' => $this?->livestreamcomments,
+            // 'livestreamlikes' => $this?->livestreamlikes,
         ];
     }
 }

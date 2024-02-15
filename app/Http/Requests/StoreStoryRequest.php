@@ -22,7 +22,7 @@ class StoreStoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|ulid',
+            // 'user_id' => 'required|ulid',
             'body' => 'required|string',
             'video_url' => 'nullable|mimetypes:video/avi,video/mp4,video/mpeg,video/quicktime',
         ];

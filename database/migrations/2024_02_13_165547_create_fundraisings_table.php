@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('fundraisings', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('user_id')->constrained();
+            $table->foreignUlid('wallet_id')->constrained();
+            $table->string('title');
+            $table->string('description');
+            $table->unsignedInteger('amount_expected');
+            $table->unsignedInteger('amount_raised');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

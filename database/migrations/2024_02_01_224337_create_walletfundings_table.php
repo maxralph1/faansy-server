@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('walletfundings', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->foreignUlid('user_id')->constrained();
+            $table->foreignUlid('card_id')->constrained();
             $table->foreignUlid('wallet_id')->constrained();
             $table->unsignedInteger('amount_funded');
             $table->timestamps();

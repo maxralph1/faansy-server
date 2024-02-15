@@ -20,7 +20,11 @@ class PostcommentController extends Controller
      */
     public function index()
     {
-        $postcomments = Postcomment::withTrashed()->latest()->paginate();
+        $postcomments = Postcomment::with([
+            'post',
+            'post.user',
+            'user'
+        ])->latest()->paginate();
 
         return PostcommentResource::collection($postcomments);
     }

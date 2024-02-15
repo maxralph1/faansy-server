@@ -22,7 +22,7 @@ class UpdatePostcommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'nullable|ulid',
+            // 'user_id' => 'nullable|ulid',
             'post_id' => 'nullable|ulid',
             'body' => 'nullable|string',
         ];

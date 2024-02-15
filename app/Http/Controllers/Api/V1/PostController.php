@@ -4,15 +4,17 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Post;
 use App\Models\Wallet;
-use Illuminate\Http\Request;
+use App\Models\Fanactivity;
+use App\Models\Transaction;
+use App\Models\Notification;
+// use Illuminate\Http\Request;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\DB;
+use App\Models\Internaltransaction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
-use App\Models\Notification;
-use App\Models\Subscription;
-use App\Models\Transaction;
 
 // use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
@@ -20,7 +22,7 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index', 'show', 'featuredPosts']]);
+        $this->middleware('auth:api', ['except' => ['index', 'featuredPosts']]);
     }
 
     /**
@@ -29,7 +31,18 @@ class PostController extends Controller
     public function index()
     {
         // $posts = Post::withTrashed()->latest()->paginate();
-        $posts = Post::latest()->paginate();
+        $posts = Post::with([
+            'user',
+            'comments',
+            'comments.user',
+            'likes',
+            'likes.user',
+            'bookmarks',
+            'bookmarks.user',
+            'bookmarks.post',
+            'bookmarks.post.comments',
+            'bookmarks.post.likes',
+        ])->latest()->paginate();
 
         return PostResource::collection($posts);
     }
@@ -39,9 +52,9 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        $post = new Post();
-
         $validated = $request->validated();
+
+        $post = new Post();
 
         if ($request->file('image_url')) {
             // Upload an Image File to Cloudinary with One line of Code
@@ -71,78 +84,110 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        // Pay Per View Logic
-        if ($post->pay_per_view == true) {
-            // check subscriber wallet balance, if they do not have enough balance, abort!
-            $subscriber_sufficient_fund = auth()->user()->wallet->balance >= $post->pay_per_view_amount;
+        function postPayPerView($post)
+        {
+            // Pay Per View Logic
+            if ($post->pay_per_view == true) {
+                // check viewer wallet balance, if they do not have enough balance, abort!
+                $viewer_sufficient_fund = auth()->user()->wallet->balance >= $post->pay_per_view_amount;
 
-            // if they have enough balance, charge the subscriber
-            if ($subscriber_sufficient_fund) {
-                $subscriber_wallet = Wallet::where('user_id', auth()->id)->first();
-                $subscribed_wallet = Wallet::where('user_id', $post->user->id)->first();
+                // if they have enough balance, charge the viewer
+                if ($viewer_sufficient_fund) {
+                    $viewer_wallet = Wallet::where('user_id', auth()->user()->id)->first();
+                    $post_owner_wallet = Wallet::where('user_id', $post->user->id)->first();
 
-                DB::transaction(function () use ($subscriber_wallet, $subscribed_wallet, $post) {
-                    // $subscriber_wallet_balance = $subscriber_wallet->balance;
-                    // $subscribed_wallet_balance = $subscribed_wallet->balance;
+                    DB::transaction(function () use ($viewer_wallet, $post_owner_wallet, $post) {
+                        $viewer_wallet->update([
+                            'balance' => $viewer_wallet->balance - $post->pay_per_view_amount
+                        ]);
 
-                    $subscriber_wallet->update([
-                        'balance' => $subscriber_wallet->balance - $post->pay_per_view_amount
-                    ]);
+                        $post_owner_wallet->update([
+                            'balance' => $post_owner_wallet->balance + (($post->pay_per_view_amount) * (96 / 100))
+                        ]);
 
-                    $subscribed_wallet->update([
-                        'balance' => $subscribed_wallet->balance + ((96 / $post->pay_per_view_amount) * 100)
-                    ]);
+                        Transaction::create([
+                            'beneficiary_id' => $post_owner_wallet->user->id,
+                            'transactor_id' => $viewer_wallet->user->id, // || auth()->user()->id,
+                            'transaction_type' => 'pay_per_view',
+                            'amount' => $post->pay_per_view_amount,
+                            'reference_id_to_resource' => $post->id,
+                        ]);
 
-                    Transaction::create([
-                        'beneficiary_id' => $subscribed_wallet->user->id,
-                        'transactor_id' => auth()->id,
-                        'transaction_type' => 'pay_per_view',
-                        'amount' => $post->pay_per_view_amount,
-                        'reference_id_to_resource' => $post->id,
-                    ]);
+                        $transaction = Transaction::create([
+                            'beneficiary_id' => $post_owner_wallet->user->id, // || $post->user->id
+                            'transactor_id' => $viewer_wallet->user->id, // || auth()->user()->id,
+                            'transaction_type' => 'commission',
+                            'amount' => - ($post->pay_per_view_amount * 100) * (4 / 100),
+                            'reference_id_to_resource' => $post->id,
+                        ]);
 
-                    Transaction::create([
-                        'beneficiary_id' => $subscribed_wallet->user->id,
-                        'transactor_id' => auth()->id,
-                        'transaction_type' => 'commission',
-                        'amount' => (4 / $post->pay_per_view_amount) * 100,
-                        'reference_id_to_resource' => $post->id,
-                    ]);
+                        Notification::create([
+                            'user_id' => $post->user->id,
+                            'notification_type' => 'pay_per_view',
+                            'monies_if_any' => $post->pay_per_view_amount * 100,
+                            'reference_id_to_resource' => $post->id,
+                            'transactor_id' => $viewer_wallet->user->id, // || auth()->user()->id,
+                        ]);
 
-                    Notification::create([
-                        'user_id' => $post->user->id,
-                        'notification_type' => 'pay_per_view',
-                        'monies_if_any' => $post->pay_per_view_amount,
-                        'reference_id_to_resource' => $post->id,
-                        'transactor_id' => auth()->id,
-                    ]);
-                });
+                        Internaltransaction::create([
+                            'transaction_type' => 'commission_on_pay_per_view',
+                            'amount' => ($post->pay_per_view_amount * 100) * (4 / 100),
+                            'reference_id_to_resource' => $post->id,
+                            'reference_id_to_transaction' => $transaction->id,
+                        ]);
 
-                return new PostResource($post);
-            } elseif (!$subscriber_sufficient_fund) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Unauthorized. You must have sufficient funds in order to view this content.',
-                ], 403);
+                        // Add the viewer as a fan, if they're already not
+                        $already_a_fan = Fanactivity::where([
+                            'creator_id' => $post->user->id,
+                            'fan_id' => $viewer_wallet->user->id
+                        ])->first();
+
+                        if (!$already_a_fan) {
+                            Fanactivity::create([
+                                'fan_id' => $viewer_wallet->user->id,
+                                'creator_id' => $post->user->id,
+                                'amount_paid_in_pay_per_view' => $post->pay_per_view_amount * 100,
+                                'cumulative_amount_spent_on_creator_by_fan' => $post->pay_per_view_amount * 100
+                            ]);
+                        } elseif ($already_a_fan) {
+                            $already_a_fan->update([
+                                'amount_paid_in_pay_per_view' => $post->pay_per_view_amount * 100,
+                                'cumulative_amount_spent_on_creator_by_fan' => $already_a_fan->cumulative_amount_spent_on_creator_by_fan + ($post->pay_per_view_amount * 100),
+                            ]);
+                        }
+
+                        return new PostResource($post);
+                    });
+                } elseif (!$viewer_sufficient_fund) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Unauthorized. You must have sufficient funds in order to view this content.',
+                    ], 403);
+                }
             }
         }
 
-        // Subscription Logic
+        // Subscription Verification Logic
         if ($post->user->users_must_be_subscribed_to_view_my_content == true) {
             $subscription_exists = Subscription::where([
                 'subscribed_id' => $post->user->id,
-                'subscriber_id' => auth()->id,
+                'subscriber_id' => auth()->user()->id,
             ])->first();
 
-            return new PostResource($post);
-        } elseif ($post->user->users_must_be_subscribed_to_view_my_content == false) {
+            if ($subscription_exists) return new PostResource($post);
+
+            postPayPerView($post);
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized. You must be subscribed to creator in order to view this content.',
             ], 403);
-        }
+        } elseif ($post->user->users_must_be_subscribed_to_view_my_content == false) {
 
-        return new PostResource($post);
+            postPayPerView($post);
+
+            return new PostResource($post);
+        }
     }
 
     /**

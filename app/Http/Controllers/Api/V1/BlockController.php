@@ -20,7 +20,10 @@ class BlockController extends Controller
      */
     public function index()
     {
-        $blocks = Block::where('blocker_id', auth()->id)->latest()->paginate();
+        $blocks = Block::with([
+            'blocker',
+            'blocked',
+        ])->where('blocker_id', auth()->id)->latest()->paginate();
 
         return BlockResource::collection($blocks);
     }

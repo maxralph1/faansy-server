@@ -11,7 +11,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,20 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'role_id' => 'nullable|ulid',
+            'first_name' => 'nullable|string',
+            'last_name' => 'nullable|string',
+            'username' => 'nullable|string',
+            'email' => 'nullable|email',
+            'password' => 'nullable|string',
+            'user_image_url' => 'nullable|mimes:jpg,jpeg,bmp,png',
+            'user_background_image_url' => 'nullable|mimes:jpg,jpeg,bmp,png',
+            'show_activity_status' => 'nullable|boolean',
+            'free_subscription' => 'nullable|boolean',
+            'subscription_amount' => 'nullable|string',
+            'show_subscription_offers' => 'nullable|string',
+            'passport_image_url' => 'nullable|string',
+            'verified' => 'nullable|string',
         ];
     }
 }

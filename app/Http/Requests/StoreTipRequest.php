@@ -23,7 +23,7 @@ class StoreTipRequest extends FormRequest
     {
         return [
             'recipient_id' => 'required|ulid',
-            'donor_id' => 'required|ulid',
+            // 'donor_id' => 'required|ulid',
             'amount' => 'required|numeric',
         ];
     }
