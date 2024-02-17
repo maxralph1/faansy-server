@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePostlikeRequest extends FormRequest
+class StoreUserverificationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class UpdatePostlikeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'user_id' => 'nullable|ulid',
-            'post_id' => 'nullable|ulid',
+            'verification_material_image_url' => 'required|mimes:jpg,jpeg,bmp,png',
         ];
     }
 }

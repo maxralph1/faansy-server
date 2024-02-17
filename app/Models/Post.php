@@ -15,12 +15,11 @@ class Post extends Model
     use HasFactory, HasUlids, SoftDeletes;
 
     protected $fillable = [
-        'user_id',
         'body',
         'image_url',
         'video_url',
         'pay_per_view',
-        'pay_per_view_amount',
+        'payperviewamount',
         'scheduled_live_time',
         'repost',
         'repost_body',
@@ -48,7 +47,7 @@ class Post extends Model
         return $this->hasMany(Bookmark::class);
     }
 
-    public function pay_per_view_amount(): Attribute
+    public function payperviewamount(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => $value / 100,

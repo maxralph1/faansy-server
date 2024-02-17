@@ -14,15 +14,13 @@ class BlockObserver
     public function creating(StoreBlockRequest $request, Block $block): void
     {
         if (auth()->check()) {
-            $user = User::where('id', auth()->id())->first();
+            $user = User::where('id', auth()->user()->id)->first();
 
-            $admin = auth()->user()->role()->where('title', 'super-admin')
-                ->orWhere('title', 'admin')
-                ->first();
+            $creator_role = auth()->user()->role()->where('title', 'creator')->first();
 
             // !auth()->user()->role()->where('title', $role)->exists()
 
-            if (!$admin) {
+            if (!$creator_role) {
                 $block->blocker_id = auth()->id();
             } else {
                 $block->blocker_id = $request->blocker_id;

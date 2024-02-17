@@ -13,7 +13,7 @@ class PostPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return $user->role->title === 'super-admin' || $user->role->title === 'admin';
     }
 
     /**
@@ -53,7 +53,7 @@ class PostPolicy
      */
     public function restore(User $user, Post $post): bool
     {
-        //
+        return $user->role->title === 'super-admin' || $user->role->title === 'admin';
     }
 
     /**
@@ -61,7 +61,7 @@ class PostPolicy
      */
     public function forceDelete(User $user, Post $post): bool
     {
-        //
+        return $user->role->title === 'super-admin' || $user->role->title === 'admin';
     }
 
     /**

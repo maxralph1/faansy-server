@@ -22,12 +22,12 @@ class StoreCardRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'user_id' => 'required|ulid',
             'country' => 'required|string',
             'state_province' => 'required|string',
             'address' => 'required|string',
             'city' => 'required|string',
-            'email' => 'required|email:rfc,dns',
+            'email' => 'required|email',
+            // 'email' => 'required|email:rfc,dns',
             'card_number' => 'required|numeric',
             'name_on_card' => 'required|string',
             'expiration' => 'required|string',

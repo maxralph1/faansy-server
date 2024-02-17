@@ -28,7 +28,7 @@ return new class extends Migration
             $table->boolean('free_subscription')->default(true);
             $table->unsignedInteger('subscription_amount')->nullable();
             $table->boolean('show_subscription_offers')->default(true);
-            $table->string('passport_image_url')->nullable();
+            $table->string('verification_material_image_url')->nullable();
             $table->boolean('verified')->default(false);
             $table->rememberToken();
             $table->timestamps();

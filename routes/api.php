@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\V1\PollresponseController;
 use App\Http\Controllers\Api\V1\SubscriptionController;
 use App\Http\Controllers\Api\V1\WalletfundingController;
 use App\Http\Controllers\Api\V1\FundwithdrawalController;
+use App\Http\Controllers\Api\V1\UserverificationController;
 use App\Http\Controllers\Api\V1\FundraisingdonationController;
 
 /*
@@ -77,6 +78,7 @@ Route::apiResource('bookmarks', BookmarkController::class);
 Route::controller(CardController::class)->group(function () {
     Route::patch('cards/{card}/restore', 'restore');
     Route::delete('cards/{card}/delete', 'forceDestroy');
+    Route::patch('cards/{card}/make-default', 'makeDefault');
 });
 Route::apiResource('cards', CardController::class);
 
@@ -167,12 +169,14 @@ Route::controller(PostcommentController::class)->group(function () {
 Route::apiResource('postcomments', PostcommentController::class);
 
 // Post
+
 Route::controller(PostController::class)->group(function () {
     Route::post('posts/{post}/repost', 'repost');
     Route::get('posts/featured-posts', 'featuredPosts');
     Route::patch('posts/featured-posts', 'makePostFeatured');
     Route::get('posts/my-posts', 'myPosts');
     Route::patch('posts/{post}/pin-post', 'pinPost');
+    Route::post('posts/{post}', 'update');
 });
 Route::apiResource('posts', PostController::class);
 
@@ -232,6 +236,15 @@ Route::controller(UserlikeController::class)->group(function () {
     Route::delete('userlikes/{userlike}/delete', 'forceDestroy');
 });
 Route::apiResource('userlikes', UserlikeController::class);
+
+// Userverification
+Route::controller(UserverificationController::class)->group(function () {
+    Route::patch('user-verifications/{userverification}/restore', 'restore');
+    Route::delete('user-verifications/{userverification}/delete', 'forceDestroy');
+    Route::patch('user-verifications/{userverification}/approved', 'approved');
+    Route::patch('user-verifications/{userverification}/rejected', 'rejected');
+});
+Route::apiResource('user-verifications', UserverificationController::class);
 
 // Wallet
 // Route::controller(WalletController::class)->group(function () {

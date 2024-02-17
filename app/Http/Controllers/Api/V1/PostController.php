@@ -9,12 +9,14 @@ use App\Models\Transaction;
 use App\Models\Notification;
 // use Illuminate\Http\Request;
 use App\Models\Subscription;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Internaltransaction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Block;
 
 // use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
@@ -22,7 +24,7 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index', 'featuredPosts']]);
+        $this->middleware('auth:api', ['except' => ['featuredPosts']]);
     }
 
     /**
@@ -30,21 +32,89 @@ class PostController extends Controller
      */
     public function index()
     {
-        // $posts = Post::withTrashed()->latest()->paginate();
-        $posts = Post::with([
-            'user',
-            'comments',
-            'comments.user',
-            'likes',
-            'likes.user',
-            'bookmarks',
-            'bookmarks.user',
-            'bookmarks.post',
-            'bookmarks.post.comments',
-            'bookmarks.post.likes',
-        ])->latest()->paginate();
+        $blocking = Block::where('blocked_id', auth()->user()->id)->first();
 
-        return PostResource::collection($posts);
+        $subscription = Subscription::where('subscriber_id', auth()->user()->id)->first();
+
+        if ($blocking && $subscription) {
+            $posts = Post::with([
+                'user',
+                'comments',
+                'comments.user',
+                'likes',
+                'likes.user',
+                'bookmarks',
+                'bookmarks.user',
+                'bookmarks.post',
+                'bookmarks.post.comments',
+                'bookmarks.post.likes',
+            ])
+                ->where('featured', true)
+                ->where('user_id', '!=', $blocking?->blocker_id)
+                ->where('user_id', '=', $subscription?->subscribed_id)
+                ->latest()->paginate();
+
+            return PostResource::collection($posts);
+        }
+
+        if ($blocking) {
+            $posts = Post::with([
+                'user',
+                'comments',
+                'comments.user',
+                'likes',
+                'likes.user',
+                'bookmarks',
+                'bookmarks.user',
+                'bookmarks.post',
+                'bookmarks.post.comments',
+                'bookmarks.post.likes',
+            ])
+                ->where('featured', true)
+                ->where('user_id', '!=', $blocking?->blocker_id)
+                ->latest()->paginate();
+
+            return PostResource::collection($posts);
+        }
+
+        if ($subscription) {
+            $posts = Post::with([
+                'user',
+                'comments',
+                'comments.user',
+                'likes',
+                'likes.user',
+                'bookmarks',
+                'bookmarks.user',
+                'bookmarks.post',
+                'bookmarks.post.comments',
+                'bookmarks.post.likes',
+            ])
+                ->where('featured', true)
+                ->where('user_id', '=', $subscription?->subscribed_id)
+                ->latest()->paginate();
+
+            return PostResource::collection($posts);
+        }
+
+        if (!$blocking && !$subscription) {
+            $posts = Post::with([
+                'user',
+                'comments',
+                'comments.user',
+                'likes',
+                'likes.user',
+                'bookmarks',
+                'bookmarks.user',
+                'bookmarks.post',
+                'bookmarks.post.comments',
+                'bookmarks.post.likes',
+            ])
+                ->where('featured', true)
+                ->latest()->paginate();
+
+            return PostResource::collection($posts);
+        }
     }
 
     /**
@@ -71,7 +141,6 @@ class PostController extends Controller
             $post['video_url'] = $path;
         }
 
-        $post['user_id'] = $validated['user_id'];
         $post['body'] = $validated['body'];
 
         $post->save();
@@ -202,13 +271,24 @@ class PostController extends Controller
         $post->update($request->validated());
 
         return new PostResource($post);
+
+        // $validated = $request->validated();
+
+        // $post->update([
+        //     'body' => $validated['body'],
+
+        // ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy(Request $request, Post $post)
     {
+        if ($request->user()->cannot('delete', $post)) {
+            abort(403);
+        }
+
         $post->delete();
     }
 
@@ -236,8 +316,12 @@ class PostController extends Controller
     /**
      * Repost a post.
      */
-    public function repost(StorePostRequest $request)
+    public function repost(StorePostRequest $request, Post $post)
     {
+        if ($request->user()->cannot('repost', $post)) {
+            abort(403);
+        }
+
         $validated = $request->validated();
 
         $re_check_if_post_exists = Post::where('id', $validated['repost_original_id'])->first();

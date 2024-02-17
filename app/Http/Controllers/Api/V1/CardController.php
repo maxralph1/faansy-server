@@ -82,4 +82,26 @@ class CardController extends Controller
     {
         $card->forceDelete();
     }
+
+
+    /**
+     * Additional Methods
+     */
+
+    /**
+     * Make the specified card default
+     */
+    public function makeDefault(Card $card)
+    {
+        $updatePreviousDefault = Card::where([
+            'user_id' => auth()->user()->id,
+            'default' => true
+        ])->update(['default' => false]);
+
+        $card->update([
+            'default' => true
+        ]);
+
+        return new CardResource($card);
+    }
 }

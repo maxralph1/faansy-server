@@ -17,7 +17,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+        $this->middleware('auth:api');
     }
 
     /**
@@ -106,7 +106,7 @@ class UserController extends Controller
             'subscribed',
 
         ])->where('role_id', $creator_role->id)->inRandomOrder()
-            ->take(10)->get();
+            ->take(5)->get();
 
         // return UserCollection::collection($creators);
         return UserResource::collection($creators);

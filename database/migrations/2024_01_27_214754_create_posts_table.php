@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('image_url')->nullable();
             $table->string('video_url')->nullable();
             $table->boolean('pay_per_view')->default(false);
-            $table->boolean('pay_per_view_amount')->nullable();
+            $table->float('payperviewamount')->nullable();
             $table->timestamp('scheduled_live_time')->nullable();
             $table->boolean('pinned')->default(false);
             $table->timestamp('pinned_at')->nullable();

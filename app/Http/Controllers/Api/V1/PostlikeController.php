@@ -59,15 +59,15 @@ class PostlikeController extends Controller
         return new PostlikeResource($postlike);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePostlikeRequest $request, Postlike $postlike)
-    {
-        $postlike->update($request->validated());
+    // /**
+    //  * Update the specified resource in storage.
+    //  */
+    // public function update(UpdatePostlikeRequest $request, Postlike $postlike)
+    // {
+    //     $postlike->update($request->validated());
 
-        return new PostlikeResource($postlike);
-    }
+    //     return new PostlikeResource($postlike);
+    // }
 
     /**
      * Remove the specified resource from storage.

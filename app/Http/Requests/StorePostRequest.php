@@ -22,12 +22,11 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'user_id' => 'required|ulid',
             'body' => 'required|string',
             'image_url' => 'nullable|mimes:jpg,jpeg,bmp,png',
             'video_url' => 'nullable|mimetypes:video/avi,video/mp4,video/mpeg,video/quicktime',
             'pay_per_view' => 'nullable|boolean',
-            'pay_per_view_amount' => 'nullable|boolean',
+            'pay_per_view_amount' => 'nullable|numeric',
             'scheduled_live_time' => 'nullable|date_format',
             'repost' => 'nullable|boolean',
             'repost_original_id' => 'nullable|ulid',
