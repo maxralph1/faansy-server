@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUlid('beneficiary_id')->references('id')->on('users');
             $table->foreignUlid('transactor_id')->references('id')->on('users');
             $table->enum('transaction_type', ['pay_per_view', 'subscription', 'tip', 'stream_tip', 'commission', 'vat']);
-            $table->integer('amount');
+            $table->float('amount');
             $table->ulid('reference_id_to_resource');
             $table->timestamps();
             $table->softDeletes();
