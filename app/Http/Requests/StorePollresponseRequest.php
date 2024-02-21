@@ -22,10 +22,10 @@ class StorePollresponseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'poll_id' => 'required|ulid',
             'polloption_id' => 'nullable|ulid',
+            'poll_id' => 'required|ulid',
             // 'user_id' => 'required|ulid',
-            'text_response' => 'required|string',
+            // 'text_response' => 'nullable|string',
         ];
     }
 }

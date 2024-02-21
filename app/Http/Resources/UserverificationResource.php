@@ -15,6 +15,7 @@ class UserverificationResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'verification_material_image_url' => $this->verification_material_image_url,
             'approved' => $this->approved,
             'approval_time' => $this->approval_time,

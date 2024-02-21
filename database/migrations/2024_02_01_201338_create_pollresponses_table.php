@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUlid('poll_id')->constrained();
             $table->foreignUlid('polloption_id')->constrained()->nullable();
             $table->foreignUlid('user_id')->constrained();
-            $table->string('text_response');
+            $table->string('text_response')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -32,89 +32,101 @@ class PostController extends Controller
      */
     public function index()
     {
-        $blocking = Block::where('blocked_id', auth()->user()->id)->first();
+        // $blocking = Block::where('blocked_id', auth()->user()->id)->first();
 
-        $subscription = Subscription::where('subscriber_id', auth()->user()->id)->first();
+        // $subscription = Subscription::where('subscriber_id', auth()->user()->id)->first();
 
-        if ($blocking && $subscription) {
-            $posts = Post::with([
-                'user',
-                'comments',
-                'comments.user',
-                'likes',
-                'likes.user',
-                'bookmarks',
-                'bookmarks.user',
-                'bookmarks.post',
-                'bookmarks.post.comments',
-                'bookmarks.post.likes',
-            ])
-                ->where('featured', true)
-                ->where('user_id', '!=', $blocking?->blocker_id)
-                ->where('user_id', '=', $subscription?->subscribed_id)
-                ->latest()->paginate();
+        // if ($blocking && $subscription) {
+        //     $posts = Post::with([
+        //         'user',
+        //         'comments',
+        //         'comments.user',
+        //         'likes',
+        //         'likes.user',
+        //         'bookmarks',
+        //         'bookmarks.user',
+        //         'bookmarks.post',
+        //         'bookmarks.post.comments',
+        //         'bookmarks.post.likes',
+        //     ])
+        //         ->where([
+        //             'user_id' => auth()->user()->id,
+        //             'featured' => true,
+        //             'user_id', '!=', $blocking?->blocker_id,
+        //             'user_id', '=', $subscription?->subscribed_id
+        //         ])->latest()->paginate();
 
-            return PostResource::collection($posts);
-        }
+        //     return PostResource::collection($posts);
+        // }
 
-        if ($blocking) {
-            $posts = Post::with([
-                'user',
-                'comments',
-                'comments.user',
-                'likes',
-                'likes.user',
-                'bookmarks',
-                'bookmarks.user',
-                'bookmarks.post',
-                'bookmarks.post.comments',
-                'bookmarks.post.likes',
-            ])
-                ->where('featured', true)
-                ->where('user_id', '!=', $blocking?->blocker_id)
-                ->latest()->paginate();
+        // if ($blocking) {
+        //     $posts = Post::with([
+        //         'user',
+        //         'comments',
+        //         'comments.user',
+        //         'likes',
+        //         'likes.user',
+        //         'bookmarks',
+        //         'bookmarks.user',
+        //         'bookmarks.post',
+        //         'bookmarks.post.comments',
+        //         'bookmarks.post.likes',
+        //     ])
+        //         ->where([
+        //             'user_id' => auth()->user()->id,
+        //             'featured' => true,
+        //             'user_id', '!=', $blocking?->blocker_id
+        //         ])->latest()->paginate();
 
-            return PostResource::collection($posts);
-        }
+        //     return PostResource::collection($posts);
+        // }
 
-        if ($subscription) {
-            $posts = Post::with([
-                'user',
-                'comments',
-                'comments.user',
-                'likes',
-                'likes.user',
-                'bookmarks',
-                'bookmarks.user',
-                'bookmarks.post',
-                'bookmarks.post.comments',
-                'bookmarks.post.likes',
-            ])
-                ->where('featured', true)
-                ->where('user_id', '=', $subscription?->subscribed_id)
-                ->latest()->paginate();
+        // if ($subscription) {
+        //     $posts = Post::with([
+        //         'user',
+        //         'comments',
+        //         'comments.user',
+        //         'likes',
+        //         'likes.user',
+        //         'bookmarks',
+        //         'bookmarks.user',
+        //         'bookmarks.post',
+        //         'bookmarks.post.comments',
+        //         'bookmarks.post.likes',
+        //     ])
+        //         ->where([
+        //             'user_id' => auth()->user()->id,
+        //             'featured' => true,
+        //             'user_id', '=', $subscription?->subscribed_id
+        //         ])->latest()->paginate();
 
-            return PostResource::collection($posts);
-        }
+        //     return PostResource::collection($posts);
+        // }
 
-        if (!$blocking && !$subscription) {
-            $posts = Post::with([
-                'user',
-                'comments',
-                'comments.user',
-                'likes',
-                'likes.user',
-                'bookmarks',
-                'bookmarks.user',
-                'bookmarks.post',
-                'bookmarks.post.comments',
-                'bookmarks.post.likes',
-            ])
-                ->where('featured', true)
-                ->latest()->paginate();
+        // if (!$blocking && !$subscription) {
+        //     $posts = Post::with([
+        //         'user',
+        //         'comments',
+        //         'comments.user',
+        //         'likes',
+        //         'likes.user',
+        //         'bookmarks',
+        //         'bookmarks.user',
+        //         'bookmarks.post',
+        //         'bookmarks.post.comments',
+        //         'bookmarks.post.likes',
+        //     ])
+        //         ->where([
+        //             ['user_id' => auth()->user()->id] ||
+        //                 ['featured' => true],
+        //         ])->latest()->paginate();
 
-            return PostResource::collection($posts);
-        }
+        //     return PostResource::collection($posts);
+        // }
+
+        $posts = Post::latest()->paginate();
+
+        return PostResource::collection($posts);
     }
 
     /**
@@ -136,7 +148,7 @@ class PostController extends Controller
             $post['image_url'] = $path;
         }
 
-        if ($request->file('video_url')) {
+        if ($request->hasFile('video_url')) {
             $path = $validated['video_url']->store('videos/posts');
             $post['video_url'] = $path;
         }
@@ -268,16 +280,28 @@ class PostController extends Controller
             abort(403);
         }
 
-        $post->update($request->validated());
+        $validated = $request->validated();
+
+        if ($request->file('image_url')) {
+            // Upload an Image File to Cloudinary with One line of Code
+            // $uploadedFileUrl = Cloudinary::upload($validated['image_url'])->getRealPath())->getSecurePath();
+            // // $uploadedFileUrl = Cloudinary::upload($request->file('image_url')->getRealPath())->getSecurePath();
+            // $post['image_url'] = $uploadedFileUrl;
+
+            $path = $validated['image_url']->store('images/posts');
+            $post['image_url'] = $path;
+        }
+
+        if ($request->file('video_url')) {
+            $path = $validated['video_url']->store('videos/posts');
+            $post['video_url'] = $path;
+        }
+
+        $post['body'] = $validated['body'];
+
+        $post->update();
 
         return new PostResource($post);
-
-        // $validated = $request->validated();
-
-        // $post->update([
-        //     'body' => $validated['body'],
-
-        // ]);
     }
 
     /**

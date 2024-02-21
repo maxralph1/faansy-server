@@ -35,7 +35,10 @@ class NotificationResource extends JsonResource
                 'user_image_url' => $this->transactor->user_image_url,
                 'verified' => $this->transactor->verified,
             ],
-            'read' => $this->read
+            'read' => $this->read,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'deleted_at' => $this->deleted_at,
         ];
     }
 }

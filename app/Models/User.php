@@ -135,6 +135,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Poll::class);
     }
 
+    public function polloptions(): HasMany
+    {
+        return $this->hasMany(Polloption::class);
+    }
+
+    public function pollresponses(): HasMany
+    {
+        return $this->hasMany(Pollresponse::class);
+    }
+
     public function postcomments(): HasMany
     {
         return $this->hasMany(Postcomment::class);

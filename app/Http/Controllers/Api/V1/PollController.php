@@ -50,21 +50,17 @@ class PollController extends Controller
             $poll->save();
 
             // Add the poll options
-            if ($request->poll_option_1) {
-                $poll_option_1 = Polloption::create([
-                    'poll_id' => $poll->id,
-                    'user_id' => $poll->user_id,
-                    'option' => $validated['poll_option_1'],
-                ]);
-            }
+            $poll_option_1 = Polloption::create([
+                'poll_id' => $poll->id,
+                'user_id' => $poll->user_id,
+                'option' => $validated['poll_option_1'],
+            ]);
 
-            if ($request->poll_option_2) {
-                $poll_option_2 = Polloption::create([
-                    'poll_id' => $poll->id,
-                    'user_id' => $poll->user_id,
-                    'option' => $validated['poll_option_2'],
-                ]);
-            }
+            $poll_option_2 = Polloption::create([
+                'poll_id' => $poll->id,
+                'user_id' => $poll->user_id,
+                'option' => $validated['poll_option_2'],
+            ]);
 
             if ($request->poll_option_3) {
                 $poll_option_3 = Polloption::create([

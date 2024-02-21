@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignUlid('wallet_id')->constrained();
             $table->string('title');
             $table->string('description');
-            $table->unsignedInteger('amount_expected');
-            $table->unsignedInteger('amount_raised');
+            $table->float('amount_expected');
+            $table->float('amount_raised');
             $table->timestamps();
             $table->softDeletes();
         });

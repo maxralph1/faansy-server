@@ -23,9 +23,9 @@ class StorePollRequest extends FormRequest
     {
         return [
             'questionnaire' => 'required|string',
-            'close_time' => 'required|date_format',
-            'poll_option_1' => 'nullable|string',
-            'poll_option_2' => 'nullable|string',
+            'close_time' => 'nullable|date_format:Y-m-d\\TH:i',
+            'poll_option_1' => 'required|string',
+            'poll_option_2' => 'required|string',
             'poll_option_3' => 'nullable|string',
             'poll_option_4' => 'nullable|string',
         ];

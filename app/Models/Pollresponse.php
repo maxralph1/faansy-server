@@ -13,15 +13,15 @@ class Pollresponse extends Model
     use HasFactory, HasUlids, SoftDeletes;
 
     protected $fillable = [
+        'polloption_id',
         'poll_id',
-        'poll_option_selection_id',
         'user_id',
         'text_response',
     ];
 
     public function polloption(): BelongsTo
     {
-        return $this->belongsTo(Polloption::class, 'poll_option_selection_id');
+        return $this->belongsTo(Polloption::class);
     }
 
     public function poll(): BelongsTo

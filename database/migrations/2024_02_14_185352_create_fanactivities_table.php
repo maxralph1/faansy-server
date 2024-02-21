@@ -15,11 +15,11 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('fan_id')->references('id')->on('users');
             $table->foreignUlid('creator_id')->references('id')->on('users');
-            $table->integer('amount_paid_in_pay_per_view')->nullable();
-            $table->integer('amount_paid_in_subscription')->nullable();
-            $table->integer('amount_paid_in_stream_tip')->nullable();
-            $table->integer('amount_paid_in_tip')->nullable();
-            $table->integer('cumulative_amount_spent_on_creator_by_fan');
+            $table->float('amount_paid_in_pay_per_view')->nullable();
+            $table->float('amount_paid_in_subscription')->nullable();
+            $table->float('amount_paid_in_stream_tip')->nullable();
+            $table->float('amount_paid_in_tip')->nullable();
+            $table->float('cumulative_amount_spent_on_creator_by_fan');
             $table->timestamps();
             $table->softDeletes();
         });

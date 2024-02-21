@@ -41,19 +41,24 @@ class PollresponseController extends Controller
     {
         $validated = $request->validated();
 
-        $pollresponse = new Pollresponse();
+        $pollresponse_exists = Pollresponse::where([
+            'poll_id' => $validated['poll_id'],
+            'user_id' => auth()->user()->id
+        ])->first();
 
-        $poll_exists = Poll::find($validated['poll_id']);
-        $polloption_exists = Polloption::find($validated['polloption_id']);
+        if (!$pollresponse_exists) {
+            $pollresponse = Pollresponse::create([
+                'polloption_id' => $validated['polloption_id'],
+                'poll_id' => $validated['poll_id'],
+                'user_id' => auth()->user()->id,
+                'text_response' => ''
+                // ($request->text_response) && 'text_response' => $validated['text_response']
+            ]);
 
-        Pollresponse::create([
-            $pollresponse['poll_id'] = $poll_exists->id,
-            $pollresponse['user_id'] = auth()->user()->id,
-            $pollresponse['poll_option_selection'] = $polloption_exists->id,
-            ($request->text_response) && $pollresponse['text_response'] = $validated['text_response']
-        ]);
-
-        return new PollresponseResource($pollresponse);
+            return new PollresponseResource($pollresponse);
+        } elseif ($pollresponse_exists) {
+            $pollresponse_exists->delete();
+        }
     }
 
     /**

@@ -34,7 +34,6 @@ class UpdateUserRequest extends FormRequest
             'free_subscription' => 'nullable|boolean',
             'subscription_amount' => 'nullable|string',
             'show_subscription_offers' => 'nullable|string',
-            'passport_image_url' => 'nullable|string',
             'verified' => 'nullable|string',
         ];
     }

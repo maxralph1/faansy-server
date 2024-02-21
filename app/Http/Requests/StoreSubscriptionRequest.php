@@ -24,7 +24,7 @@ class StoreSubscriptionRequest extends FormRequest
         return [
             'subscribed_id' => 'required|ulid',
             // 'subscriber_id' => 'required|ulid',
-            'subscription_amount_paid' => 'nullable|numeric',
+            // 'subscription_amount_paid' => 'nullable|numeric',
         ];
     }
 }

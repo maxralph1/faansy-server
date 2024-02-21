@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUlid('user_id')->constrained();
             $table->foreignUlid('card_id')->constrained();
             $table->foreignUlid('wallet_id')->constrained();
-            $table->unsignedInteger('amount_funded');
+            $table->float('amount_funded');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -24,6 +24,11 @@ class Poll extends Model
         return $this->hasMany(Polloption::class);
     }
 
+    public function pollresponses(): HasMany
+    {
+        return $this->hasMany(Pollresponse::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

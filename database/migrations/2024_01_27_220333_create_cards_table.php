@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('expiration');
             $table->string('cvc');
             $table->boolean('legal_age')->default(false);
+            $table->boolean('default')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

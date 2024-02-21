@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rules\File;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePostRequest extends FormRequest
@@ -24,7 +25,30 @@ class StorePostRequest extends FormRequest
         return [
             'body' => 'required|string',
             'image_url' => 'nullable|mimes:jpg,jpeg,bmp,png',
-            'video_url' => 'nullable|mimetypes:video/avi,video/mp4,video/mpeg,video/quicktime',
+            // 'image_url' => [
+            //     'nullable',
+            //     File::image()
+            //         // ->min(1024)
+            //         // ->max(12 * 1024)
+            //         ->min('1kb')
+            //         ->max('10mb')
+            // ],
+            // 'video_url' => [
+            //     'required',
+            //     File::video()
+            //         // ->min(1024)
+            //         // ->max(12 * 1024)
+            //         ->min('1kb')
+            //         ->max('10mb')
+            // ],
+            // 'video_url' => [
+            //     'nullable',
+            //     File::types(['mp4', 'mpeg'])
+            //         ->min(1024)
+            //         ->max(12 * 1024),
+            // ],
+            // 'video_url' => 'nullable|file|mimetypes:video/mp4,gif',
+            'video_url' => 'nullable|file|mimetypes:video/avi,video/mp4,video/mpeg,video/quicktime',
             'pay_per_view' => 'nullable|boolean',
             'pay_per_view_amount' => 'nullable|numeric',
             'scheduled_live_time' => 'nullable|date_format',

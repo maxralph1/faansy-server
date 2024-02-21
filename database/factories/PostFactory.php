@@ -30,6 +30,7 @@ class PostFactory extends Factory
             'pinned_at' => null,
             'featured' => false,
             'repost' => false,
+            'featured' => fake()->boolean(),
             // 'repost_original_id' => fake()->text(100),
             // 'repost_body' => fake()->text(20),
             // 'repost_original_post_timestamp' => now(),

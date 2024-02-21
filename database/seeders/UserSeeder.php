@@ -43,6 +43,8 @@ class UserSeeder extends Seeder
             'email' => 'creator@creator.com',
             'password' => bcrypt('password'),
             'email_verified_at' => now(),
+            'free_subscription' => false,
+            'subscription_amount' => 50,
             'role_id' => Role::where('title', 'creator')->first()->id,
         ]);
 
@@ -63,6 +65,8 @@ class UserSeeder extends Seeder
             'email' => 'creator3@creator3.com',
             'password' => bcrypt('password'),
             'email_verified_at' => now(),
+            'free_subscription' => false,
+            'subscription_amount' => 100,
             'role_id' => Role::where('title', 'creator')->first()->id,
         ]);
 
@@ -83,6 +87,8 @@ class UserSeeder extends Seeder
             'email' => 'creator5@creator5.com',
             'password' => bcrypt('password'),
             'email_verified_at' => now(),
+            'free_subscription' => false,
+            'subscription_amount' => 150,
             'role_id' => Role::where('title', 'creator')->first()->id,
         ]);
 
@@ -113,6 +119,8 @@ class UserSeeder extends Seeder
             'email' => 'creator8@creator8.com',
             'password' => bcrypt('password'),
             'email_verified_at' => now(),
+            'free_subscription' => false,
+            'subscription_amount' => 20,
             'role_id' => Role::where('title', 'creator')->first()->id,
         ]);
 
@@ -133,6 +141,8 @@ class UserSeeder extends Seeder
             'email' => 'creator10@creator10.com',
             'password' => bcrypt('password'),
             'email_verified_at' => now(),
+            'free_subscription' => false,
+            'subscription_amount' => 120,
             'role_id' => Role::where('title', 'creator')->first()->id,
         ]);
 
@@ -153,6 +163,8 @@ class UserSeeder extends Seeder
             'email' => 'creator12@creator12.com',
             'password' => bcrypt('password'),
             'email_verified_at' => now(),
+            'free_subscription' => false,
+            'subscription_amount' => 30,
             'role_id' => Role::where('title', 'creator')->first()->id,
         ]);
 

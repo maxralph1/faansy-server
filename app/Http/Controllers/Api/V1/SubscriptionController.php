@@ -45,9 +45,16 @@ class SubscriptionController extends Controller
     {
         $validated = $request->validated();
 
+        if ($validated['subscribed_id'] == auth()->user()->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Conflict: You cannot subscribe to yourself!',
+            ], 409);
+        }
+
         $already_subscribed = Subscription::where([
-            'subscriber_id' => $request->subscriber_id,
-            'subscribed_id' => $request->subscribed_id,
+            'subscriber_id' => auth()->user()->id,
+            'subscribed_id' => $validated['subscribed_id'],
         ])->first();
 
         if ($already_subscribed) {
@@ -61,13 +68,13 @@ class SubscriptionController extends Controller
         $subscription = new Subscription();
 
         // Find Creator 
-        $creator = User::find($request->subscribed_id);
+        $creator = User::find($validated['subscribed_id']);
 
         // Check if subscription is free
-        if ($creator->subscription_amount != 0 || $creator->subscription_amount != null) {
+        if ($creator->free_subscription == true || $creator->subscription_amount == 0 || $creator->subscription_amount == null) {
 
             $subscription['subscribed_id'] = $validated['subscribed_id'];
-            $subscription['subscriber_id'] = $validated['subscriber_id'];
+            $subscription['subscriber_id'] = auth()->user()->id;
 
             $subscription->save();
 
@@ -82,23 +89,18 @@ class SubscriptionController extends Controller
         // if they have enough wallet balance, charge the subscriber
         if (
             $subscriber_sufficient_fund
-            && ($creator->subscription_amount != 0 || $creator->subscription_amount != null)
+            && ($creator->free_subscription == false || $creator->subscription_amount != 0 || $creator->subscription_amount != null)
         ) {
-            $subscriber_wallet = Wallet::where('user_id', $request->donor_id)->first();
+            $subscriber_wallet = Wallet::where('user_id', auth()->user()->id)->first();
             $creator_wallet = Wallet::where('user_id', $creator->id)->first();
 
             DB::transaction(function () use ($request, $validated, $subscription, $subscriber_wallet, $creator_wallet, $creator) {
                 // DB::beginTransaction();
 
-                if ($request->subscriber_id == auth()->user()->id) {
-
-                    if ($request->subscription_amount_paid == null) {
-                        $subscription['subscription_amount_paid'] = 0;
-                    }
-
-                    $subscription['subscribed_id'] = $validated['subscribed_id'];
-                    $subscription['subscriber_id'] = $validated['subscriber_id'];
-                }
+                $subscription['subscription_amount_paid'] = $creator->subscription_amount;
+                $subscription['subscribed_id'] = $validated['subscribed_id'];
+                $subscription['subscriber_id'] = auth()->user()->id;
+                $subscription->save();
 
                 $subscriber_wallet->update([
                     'balance' => $subscriber_wallet->balance - $creator->subscription_amount
@@ -113,7 +115,7 @@ class SubscriptionController extends Controller
                     'beneficiary_id' => $creator->id,
                     'transactor_id' => auth()->user()->id,
                     'transaction_type' => 'subscription',
-                    'amount' => $creator->subscription_amount * 100,
+                    'amount' => $creator->subscription_amount,
                     'reference_id_to_resource' => $subscription->id,
                 ]);
 
@@ -121,21 +123,21 @@ class SubscriptionController extends Controller
                     'beneficiary_id' => $creator->id,
                     'transactor_id' => auth()->user()->id,
                     'transaction_type' => 'commission',
-                    'amount' => - ($creator->subscription_amount * 100) * (4 / 100),
+                    'amount' => - ($creator->subscription_amount) * (4 / 100),
                     'reference_id_to_resource' => $subscription->id,
                 ]);
 
                 Notification::create([
                     'user_id' => $creator->id,
                     'notification_type' => 'subscription',
-                    'monies_if_any' => $creator->subscription_amount * 100,
+                    'monies_if_any' => $creator->subscription_amount,
                     'reference_id_to_resource' => $subscription->id,
                     'transactor_id' => auth()->user()->id,
                 ]);
 
                 Internaltransaction::create([
                     'transaction_type' => 'commission_on_subscription',
-                    'amount' => ($creator->subscription_amount * 100) * (4 / 100),
+                    'amount' => ($creator->subscription_amount) * (4 / 100),
                     'reference_id_to_resource' => $subscription->id,
                     'reference_id_to_transaction' => $transaction->id,
                 ]);
@@ -150,13 +152,13 @@ class SubscriptionController extends Controller
                     Fanactivity::create([
                         'fan_id' => $subscriber_wallet->user->id,
                         'creator_id' => $creator->id,
-                        'amount_paid_in_subscription' => $creator->subscription_amount * 100,
-                        'cumulative_amount_spent_on_creator_by_fan' => $creator->subscription_amount * 100
+                        'amount_paid_in_subscription' => $creator->subscription_amount,
+                        'cumulative_amount_spent_on_creator_by_fan' => $creator->subscription_amount
                     ]);
                 } elseif ($already_a_fan) {
                     $already_a_fan->update([
-                        'amount_paid_in_subscription' => $creator->subscription_amount * 100,
-                        'cumulative_amount_spent_on_creator_by_fan' => $already_a_fan->cumulative_amount_spent_on_creator_by_fan + ($creator->subscription_amount * 100),
+                        'amount_paid_in_subscription' => $creator->subscription_amount,
+                        'cumulative_amount_spent_on_creator_by_fan' => $already_a_fan->cumulative_amount_spent_on_creator_by_fan + ($creator->subscription_amount),
                     ]);
                 }
 

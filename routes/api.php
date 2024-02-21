@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\V1\WalletfundingController;
 use App\Http\Controllers\Api\V1\FundwithdrawalController;
 use App\Http\Controllers\Api\V1\UserverificationController;
 use App\Http\Controllers\Api\V1\FundraisingdonationController;
+use Illuminate\Support\Facades\File;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,11 @@ use App\Http\Controllers\Api\V1\FundraisingdonationController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // return $request->user();
 // });
+
+Route::get('/storage-symlink', function (Request $request) {
+    File::link(storage_path('app/public'), public_path('storage'));
+});
+
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -169,7 +175,6 @@ Route::controller(PostcommentController::class)->group(function () {
 Route::apiResource('postcomments', PostcommentController::class);
 
 // Post
-
 Route::controller(PostController::class)->group(function () {
     Route::post('posts/{post}/repost', 'repost');
     Route::get('posts/featured-posts', 'featuredPosts');
@@ -225,9 +230,10 @@ Route::apiResource('tips', TipController::class);
 // Users
 Route::apiResource('users', UserController::class);
 Route::controller(UserController::class)->group(function () {
+    Route::get('my-profile', 'myProfile');
     Route::get('creators', 'creators');
     Route::get('creators/{user:username}', 'creator');
-    Route::put('creators/{user:username}/verify', 'verifyCreator');
+    Route::post('creators/{user:username}/verify', 'verifyCreator');
 });
 
 // Userlike
@@ -241,8 +247,8 @@ Route::apiResource('userlikes', UserlikeController::class);
 Route::controller(UserverificationController::class)->group(function () {
     Route::patch('user-verifications/{userverification}/restore', 'restore');
     Route::delete('user-verifications/{userverification}/delete', 'forceDestroy');
-    Route::patch('user-verifications/{userverification}/approved', 'approved');
-    Route::patch('user-verifications/{userverification}/rejected', 'rejected');
+    Route::put('user-verifications/{userverification}/approve', 'approve');
+    Route::put('user-verifications/{userverification}/reject', 'reject');
 });
 Route::apiResource('user-verifications', UserverificationController::class);
 

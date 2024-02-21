@@ -15,7 +15,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('user_id')->constrained();
             $table->enum('notification_type', ['pay_per_view', 'subscription', 'tip', 'stream_tip', 'commission', 'vat']);
-            $table->unsignedInteger('monies_if_any');
+            $table->float('monies_if_any');
             $table->ulid('reference_id_to_resource');
             $table->ulid('transactor_id');
             $table->boolean('read')->default(false);

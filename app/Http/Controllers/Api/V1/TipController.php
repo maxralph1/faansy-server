@@ -47,8 +47,15 @@ class TipController extends Controller
 
         // if they have enough wallet balance, charge the donor
         if ($donor_sufficient_fund && $request->amount > 0) {
-            $donor_wallet = Wallet::where('user_id', $request->donor_id)->first();
+            $donor_wallet = Wallet::where('user_id', auth()->user()->id)->first();
             $recipient_wallet = Wallet::where('user_id', $request->recipient_id)->first();
+
+            if ($donor_wallet->id == $recipient_wallet->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Conflict: You cannot tip yourself!',
+                ], 409);
+            }
 
             DB::transaction(function () use ($donor_wallet, $recipient_wallet, $request) {
                 // DB::beginTransaction();
@@ -66,7 +73,7 @@ class TipController extends Controller
 
                 Transaction::create([
                     'beneficiary_id' => $tip->recipient_id,
-                    'transactor_id' => $tip->donor_id,
+                    'transactor_id' => auth()->user()->id,
                     'transaction_type' => 'tip',
                     'amount' => $tip->amount * 100,
                     'reference_id_to_resource' => $tip->id,
@@ -74,7 +81,7 @@ class TipController extends Controller
 
                 $transaction = Transaction::create([
                     'beneficiary_id' => $tip->recipient_id,
-                    'transactor_id' => $tip->donor_id,
+                    'transactor_id' => auth()->user()->id,
                     'transaction_type' => 'commission',
                     'amount' => - ($tip->amount * 100) * (4 / 100),
                     'reference_id_to_resource' => $tip->id,
@@ -85,7 +92,7 @@ class TipController extends Controller
                     'notification_type' => 'tip',
                     'monies_if_any' => $tip->amount * 100,
                     'reference_id_to_resource' => $tip->id,
-                    'transactor_id' => $tip->donor_id,
+                    'transactor_id' => auth()->user()->id,
                 ]);
 
                 Internaltransaction::create([
@@ -98,12 +105,12 @@ class TipController extends Controller
                 // Add the donor as a fan, if they're already not
                 $already_a_fan = Fanactivity::where([
                     'creator_id' => $tip->recipient_id,
-                    'fan_id' => $tip->donor_id
+                    'fan_id' => auth()->user()->id
                 ])->first();
 
                 if (!$already_a_fan) {
                     Fanactivity::create([
-                        'fan_id' => $tip->donor_id,
+                        'fan_id' => auth()->user()->id,
                         'creator_id' => $tip->recipient_id,
                         'amount_paid_in_tip' => $tip->amount * 100,
                         'cumulative_amount_spent_on_creator_by_fan' => $tip->amount * 100

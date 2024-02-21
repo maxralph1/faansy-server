@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\PollResource;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\ProfileResource;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -30,7 +31,7 @@ class UserResource extends JsonResource
             'last_seen' => $this->last_seen,
             'show_activity_status' => $this->show_activity_status,
             'free_subscription' => $this->free_subscription,
-            'subscription_amount' => $this->subscription_amount,
+            'subscription_amount' => $this->subscription_amount / 100,
             'show_subscription_offers' => $this->show_subscription_offers,
             'verified' => $this->verified,
             'created_at' => $this->created_at,
@@ -53,6 +54,8 @@ class UserResource extends JsonResource
             'userlikers' => $this->userlikers,
             'subscriptions' => SubscriptionResource::collection($this->subscribed),
             'posts' => PostResource::collection($this->posts),
+            // 'polls' => $this->polls,
+            'polls' => PollResource::collection($this->polls),
             'postcomments' => $this->postcomments,
             'postlikes' => $this->postlikes,
             // 'livestreams' => $this?->livestreams,

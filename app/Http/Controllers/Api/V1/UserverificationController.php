@@ -44,11 +44,19 @@ class UserverificationController extends Controller
         DB::transaction(function () use ($request, $user) {
             $validated = $request->validated();
 
+            $path = $validated['verification_material_image_url']->store('images/users');
+
             $user->update([
-                'verification_material_image_url' => $validated['verification_material_image_url'],
+                'verification_material_image_url' => $path,
             ]);
 
-            $userverification = Userverification::create($request->validated());
+            $path = $validated['verification_material_image_url']->store('images/users/verifications');
+
+            $userverification = Userverification::create([
+                'verification_material_image_url' => $path,
+                'requesting_user_id' => auth()->user()->id,
+                'approving_user_id' => auth()->user()->id,
+            ]);
 
             return new UserverificationResource($userverification);
         });
@@ -94,8 +102,9 @@ class UserverificationController extends Controller
     /**
      * Approve verification.
      */
-    public function approved(Userverification $userverification)
+    public function approve(Userverification $userverification)
     {
+        $userverification = Userverification::where('id', $userverification->id)->first();
         $userverification->update([
             'approved' => true,
             // 'rejected' => false,
@@ -109,7 +118,7 @@ class UserverificationController extends Controller
     /**
      * Disapprove verification.
      */
-    public function rejected(UpdateUserverificationRequest $request, Userverification $userverification)
+    public function reject(UpdateUserverificationRequest $request, Userverification $userverification)
     {
         $validated = $request->validated();
 
