@@ -3,7 +3,7 @@
 
 You have requested to sign in without a password. Please click on the button to sign into your account. 
 
-<x-mail::button :url="'http://localhost:5173/passwordless-signin/' . $username . '/' . $token " color="error">
+<x-mail::button :url="'{{ config('app.url') }}/passwordless-signin/' . $username . '/' . $token " color="error">
 Sign into your Account
 </x-mail::button>
 

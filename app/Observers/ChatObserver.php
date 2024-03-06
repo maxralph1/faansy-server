@@ -3,7 +3,6 @@
 namespace App\Observers;
 
 use App\Models\Chat;
-use App\Http\Requests\StoreChatRequest;
 
 class ChatObserver
 {
@@ -13,15 +12,16 @@ class ChatObserver
     public function creating(Chat $chat): void
     {
         // $chat_exists = Chat::where([
-        //     'participator_1_id', $chat->participator_1_id,
-        //     'participator_2_id', $chat->participator_2_id,
+        //     'participator_1_id' => $chat->participator_1_id,
+        //     'participator_2_id' => $chat->participator_2_id,
         // ])
         //     ->orWhere([
-        //         'participator_1_id', $chat->participator_2_id,
-        //         'participator_2_id', $chat->participator_1_id,
+        //         'participator_1_id' => $chat->participator_2_id,
+        //         'participator_2_id' => $chat->participator_1_id,
         //     ])->first();
-
         // $chat_exists && abort(409);
+
+        // ($chat->participator_1_id == auth()->user()->id && $chat->participator_2_id == auth()->user()->id) && abort(409);
 
         $chat->slug = str()->slug($chat->participator_1_id . '_' . $chat->participator_2_id);
     }

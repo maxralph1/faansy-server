@@ -16,7 +16,11 @@ class Message extends Model
         'user_id',
         'chat_id',
         'body',
-        // 'read',
+        'pay_per_view',
+        'payperviewamount',
+        'image_url',
+        'video_url',
+        'read',
     ];
 
     public function user(): BelongsTo

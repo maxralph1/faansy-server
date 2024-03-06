@@ -25,6 +25,10 @@ class UpdateMessageRequest extends FormRequest
             // 'user_id' => 'required|ulid',
             'chat_id' => 'required|ulid',
             'body' => 'nullable|string',
+            'pay_per_view' => 'nullable|boolean',
+            'payperviewamount' => 'nullable|numeric',
+            'image_url' => 'nullable|mimes:jpg,jpeg,bmp,png',
+            'video_url' => 'nullable|mimetypes:video/avi,video/mp4,video/mpeg,video/quicktime',
             'read' => 'nullable|string',
         ];
     }

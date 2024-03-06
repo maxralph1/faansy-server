@@ -15,7 +15,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('fundraising_id')->constrained();
             $table->foreignUlid('user_id')->constrained();
-            $table->unsignedInteger('amount_donated');
+            $table->float('amount_donated');
             $table->timestamps();
             $table->softDeletes();
         });

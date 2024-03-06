@@ -33,7 +33,8 @@ class UpdateUserRequest extends FormRequest
             'show_activity_status' => 'nullable|boolean',
             'free_subscription' => 'nullable|boolean',
             'subscription_amount' => 'nullable|string',
-            'show_subscription_offers' => 'nullable|string',
+            'show_subscription_offers' => 'nullable|boolean',
+            'dark_mode' => 'nullable|boolean',
             'verified' => 'nullable|string',
         ];
     }

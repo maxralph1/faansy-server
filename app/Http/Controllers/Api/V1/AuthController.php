@@ -67,6 +67,7 @@ class AuthController extends Controller
             'role' => $user->role,
             'pollresponses' => $user->pollresponses,
         ])->attempt($credentials);
+        // ])->setTTL(1)->attempt($credentials);
 
         return response()->json([
             'status' => 'success',

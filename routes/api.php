@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\TipController;
 use App\Http\Controllers\Api\V1\AuthController;
@@ -29,8 +30,9 @@ use App\Http\Controllers\Api\V1\SubscriptionController;
 use App\Http\Controllers\Api\V1\WalletfundingController;
 use App\Http\Controllers\Api\V1\FundwithdrawalController;
 use App\Http\Controllers\Api\V1\UserverificationController;
+use App\Http\Controllers\Api\V1\UsercreatorrequestController;
 use App\Http\Controllers\Api\V1\FundraisingdonationController;
-use Illuminate\Support\Facades\File;
+use App\Http\Controllers\Api\V1\UserbecomecreatorrequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -177,10 +179,10 @@ Route::apiResource('postcomments', PostcommentController::class);
 // Post
 Route::controller(PostController::class)->group(function () {
     Route::post('posts/{post}/repost', 'repost');
+    Route::post('posts/featured-posts/{post}', 'makePostFeatured');
     Route::get('posts/featured-posts', 'featuredPosts');
-    Route::patch('posts/featured-posts', 'makePostFeatured');
     Route::get('posts/my-posts', 'myPosts');
-    Route::patch('posts/{post}/pin-post', 'pinPost');
+    Route::post('posts/{post}/pin-post', 'pinPost');
     Route::post('posts/{post}', 'update');
 });
 Route::apiResource('posts', PostController::class);
@@ -228,13 +230,14 @@ Route::controller(TipController::class)->group(function () {
 Route::apiResource('tips', TipController::class);
 
 // Users
-Route::apiResource('users', UserController::class);
 Route::controller(UserController::class)->group(function () {
     Route::get('my-profile', 'myProfile');
     Route::get('creators', 'creators');
     Route::get('creators/{user:username}', 'creator');
+    Route::post('creators/{user:username}/update', 'update');
     Route::post('creators/{user:username}/verify', 'verifyCreator');
 });
+Route::apiResource('users', UserController::class);
 
 // Userlike
 Route::controller(UserlikeController::class)->group(function () {
@@ -243,10 +246,21 @@ Route::controller(UserlikeController::class)->group(function () {
 });
 Route::apiResource('userlikes', UserlikeController::class);
 
+// Userbomecreatorrequest
+Route::controller(UserbecomecreatorrequestController::class)->group(function () {
+    Route::patch('user-become-creators/{userbecomecreatorrequest}/restore', 'restore');
+    Route::delete('user-become-creators/{userbecomecreatorrequest}/delete', 'forceDestroy');
+    Route::post('user-become-creators/{userbecomecreatorrequest}/request', 'request');
+    Route::put('user-become-creators/{userbecomecreatorrequest}/approve', 'approve');
+    Route::put('user-become-creators/{userbecomecreatorrequest}/reject', 'reject');
+});
+Route::apiResource('user-become-creators', UserbecomecreatorrequestController::class);
+
 // Userverification
 Route::controller(UserverificationController::class)->group(function () {
     Route::patch('user-verifications/{userverification}/restore', 'restore');
     Route::delete('user-verifications/{userverification}/delete', 'forceDestroy');
+    Route::post('user-verifications/{userverification}/request', 'request');
     Route::put('user-verifications/{userverification}/approve', 'approve');
     Route::put('user-verifications/{userverification}/reject', 'reject');
 });

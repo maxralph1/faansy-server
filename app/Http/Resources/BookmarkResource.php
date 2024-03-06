@@ -46,7 +46,7 @@ class BookmarkResource extends JsonResource
                 'comments' => PostcommentResource::collection($this->post->comments),
                 'likes' => PostlikeResource::collection($this->post->likes),
                 'pay_per_view' => $this->post->pay_per_view,
-                'pay_per_view_amount' => $this->post->pay_per_view_amount,
+                'payperviewamount' => $this->post->payperviewamount,
                 'repost' => $this->post->repost,
                 'repost_original_id' => $this->post->repost_original_id,
                 'repost_body' => $this->post->repost_body,

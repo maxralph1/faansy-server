@@ -9,29 +9,28 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Fundflow extends Model
+class Payperview extends Model
 {
     use HasFactory, HasUlids, SoftDeletes;
 
     protected $fillable = [
-        'beneficiary_id',
-        'transactor_id',
-        'transaction_type',
-        'amount',
-        'reference_id_to_resource'
+        'post_id',
+        'user_id',
+        'content_type',
+        'payperview_amount_paid',
     ];
 
-    public function beneficiary(): BelongsTo
+    public function post(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'beneficiary_id');
+        return $this->belongsTo(Post::class);
     }
 
-    public function transactor(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'transactor_id');
+        return $this->belongsTo(User::class);
     }
 
-    public function amount(): Attribute
+    public function payperview_amount_paid(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => $value / 100,

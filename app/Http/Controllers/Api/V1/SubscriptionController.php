@@ -122,7 +122,7 @@ class SubscriptionController extends Controller
                 $transaction = Transaction::create([
                     'beneficiary_id' => $creator->id,
                     'transactor_id' => auth()->user()->id,
-                    'transaction_type' => 'commission',
+                    'transaction_type' => 'commission_on_subscription',
                     'amount' => - ($creator->subscription_amount) * (4 / 100),
                     'reference_id_to_resource' => $subscription->id,
                 ]);

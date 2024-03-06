@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('todos', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->string('description');
+        Schema::create('postvideos', function (Blueprint $table) {
+            $table->ulid('id')->primary();
+            $table->foreignUlid('user_id')->constrained();
+            $table->foreignUlid('post_id')->constrained();
+            $table->string('video_url')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('todos');
+        Schema::dropIfExists('postvideos');
     }
 };

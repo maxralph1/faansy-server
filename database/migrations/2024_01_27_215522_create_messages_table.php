@@ -15,7 +15,11 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('user_id')->constrained();
             $table->foreignUlid('chat_id')->constrained();
-            $table->string('body');
+            $table->string('body')->nullable();
+            $table->boolean('pay_per_view')->default(false);
+            $table->float('payperviewamount')->nullable();
+            $table->string('image_url')->nullable();
+            $table->string('video_url')->nullable();
             $table->boolean('read')->default(false);
             $table->timestamps();
             $table->softDeletes();

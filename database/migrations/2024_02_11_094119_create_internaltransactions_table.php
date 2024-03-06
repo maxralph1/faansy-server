@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('internaltransactions', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->enum('transaction_type', ['commission_on_pay_per_view', 'commission_on_subscription', 'commission_on_stream_tip', 'commission_on_tip', 'commission_on_vat']);
+            $table->enum('transaction_type', ['commission_on_chat_pay_per_view', 'commission_on_post_pay_per_view', 'commission_on_subscription', 'commission_on_stream_tip', 'commission_on_tip', 'commission_on_vat', 'commission']);
             $table->float('amount');
             $table->ulid('reference_id_to_resource');
             $table->ulid('reference_id_to_transaction');

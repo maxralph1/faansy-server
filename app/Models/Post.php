@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,12 +18,17 @@ class Post extends Model
     protected $fillable = [
         'body',
         'image_url',
+        'image_url_2',
+        'image_url_3',
+        'image_url_4',
         'video_url',
         'pay_per_view',
         'payperviewamount',
         'scheduled_live_time',
         'repost',
+        'repost_original_id',
         'repost_body',
+        'repost_original_post_timestamp',
         // 'pinned',
         // 'pinned_at',
     ];
@@ -45,6 +51,16 @@ class Post extends Model
     public function bookmarks(): HasMany
     {
         return $this->hasMany(Bookmark::class);
+    }
+
+    public function postimages(): HasMany
+    {
+        return $this->hasMany(Postimage::class);
+    }
+
+    public function postvideo(): HasOne
+    {
+        return $this->hasOne(Postvideo::class);
     }
 
     public function payperviewamount(): Attribute

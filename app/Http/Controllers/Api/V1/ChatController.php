@@ -39,23 +39,6 @@ class ChatController extends Controller
      */
     public function store(StoreChatRequest $request)
     {
-        // $chat_exists = Chat::where([
-        //     'participator_1_id', $request->participator_1_id,
-        //     'participator_2_id', $request->participator_2_id,
-        // ])
-        //     ->orWhere([
-        //         'participator_1_id', $request->participator_2_id,
-        //         'participator_2_id', $request->participator_1_id,
-        //     ])->first();
-
-        $chat_exists = Chat::where('slug', $request->participator_1_id . '_' . $request->participator_2_id)
-            ->orWhere('participator_2_id', $request->participator_2_id . '_' . $request->participator_1_id)->first();
-
-        // $chat_exists && abort(409);
-        if ($chat_exists) {
-            abort(409);
-        };
-
         $chat = Chat::create($request->validated());
 
         return new ChatResource($chat);

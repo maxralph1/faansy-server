@@ -15,7 +15,12 @@ class Userverification extends Model
     protected $fillable = [
         'requesting_user_id',
         'approving_user_id',
-        'verification_material_image_url'
+        'verification_material_image_url',
+        'approved',
+        'approval_time',
+        'rejected',
+        'reason_for_rejection',
+        'rejection_time'
     ];
 
     public function requester(): BelongsTo

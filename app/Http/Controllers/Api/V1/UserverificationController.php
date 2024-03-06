@@ -100,19 +100,42 @@ class UserverificationController extends Controller
      */
 
     /**
-     * Approve verification.
+     * Request verification.
      */
-    public function approve(Userverification $userverification)
+    public function request(Userverification $userverification)
     {
         $userverification = Userverification::where('id', $userverification->id)->first();
         $userverification->update([
             'approved' => true,
             // 'rejected' => false,
             'approval_time' => now(),
-            'approving_user_id' => auth()->user()->id
+            'requesting_user_id' => auth()->user()->id
         ]);
 
         return new UserverificationResource($userverification);
+    }
+
+    /**
+     * Approve verification.
+     */
+    public function approve(Userverification $userverification)
+    {
+        DB::transaction(function () use ($userverification) {
+            $userverification->update([
+                'approved' => true,
+                // 'rejected' => false,
+                'approval_time' => now(),
+                'approving_user_id' => auth()->user()->id
+            ]);
+
+            $user = User::where('id', $userverification->requesting_user_id)->first();
+
+            $user->update([
+                'verified' => true
+            ]);
+
+            return new UserverificationResource($userverification);
+        });
     }
 
     /**

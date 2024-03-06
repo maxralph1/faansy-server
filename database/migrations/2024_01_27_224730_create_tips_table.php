@@ -15,7 +15,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('recipient_id')->references('id')->on('users');
             $table->foreignUlid('donor_id')->references('id')->on('users');
-            $table->unsignedInteger('amount');
+            $table->float('amount');
             $table->timestamps();
             $table->softDeletes();
         });

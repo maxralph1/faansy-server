@@ -82,7 +82,7 @@ class TipController extends Controller
                 $transaction = Transaction::create([
                     'beneficiary_id' => $tip->recipient_id,
                     'transactor_id' => auth()->user()->id,
-                    'transaction_type' => 'commission',
+                    'transaction_type' => 'commission_on_tip',
                     'amount' => - ($tip->amount * 100) * (4 / 100),
                     'reference_id_to_resource' => $tip->id,
                 ]);

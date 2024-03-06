@@ -30,6 +30,7 @@ class UserResource extends JsonResource
             'user_background_image_url' => $this->user_background_image_url,
             'last_seen' => $this->last_seen,
             'show_activity_status' => $this->show_activity_status,
+            'users_must_be_subscribed_to_view_my_content' => $this->users_must_be_subscribed_to_view_my_content,
             'free_subscription' => $this->free_subscription,
             'subscription_amount' => $this->subscription_amount / 100,
             'show_subscription_offers' => $this->show_subscription_offers,

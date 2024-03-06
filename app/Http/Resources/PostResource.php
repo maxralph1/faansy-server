@@ -5,8 +5,10 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use App\Http\Resources\BookmarkResource;
 use App\Http\Resources\PostlikeResource;
+use App\Http\Resources\PostimageResource;
 use App\Http\Resources\PostcommentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class PostResource extends JsonResource
 {
@@ -23,10 +25,13 @@ class PostResource extends JsonResource
             'body' => $this->body,
             'pay_per_view' => $this->pay_per_view,
             'payperviewamount' => $this->payperviewamount,
-            'image_url' => $this->image_url,
+            // 'image_url' => $this->image_url,
+            // 'images' => PostimageResource::collection($this->postimages),
+            'images' => $this->when($this->pay_per_view == false || $request->user()->id == Auth::user()->id, PostimageResource::collection($this->postimages)),
             // 'image_url' => $this->when($this->pay_per_view == false, $this->image_url),
-            'video_url' => $this->video_url,
-            // 'video_url' => $this->when($this->pay_per_view == false, $this->video_url),
+            // 'video_url' => $this->video_url,
+            // 'video_url' => PostvideoResource::collection($this->postvideo),
+            'video' => $this->when($this->pay_per_view == false || $request->user()->id == Auth::user()->id, $this?->postvideo),
             'pinned' => $this->pinned,
             'pinned_at' => $this->pinned_at,
             'user' => [

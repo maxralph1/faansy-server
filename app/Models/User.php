@@ -34,11 +34,13 @@ class User extends Authenticatable implements JWTSubject
         'user_image_url',
         'user_background_image_url',
         'show_activity_status',
+        'users_must_be_subscribed_to_view_my_content',
         'free_subscription',
         'subscription_amount',
         'show_subscription_offers',
         'passport_image_url',
         'verified',
+        'dark_mode',
     ];
 
     /**

@@ -22,12 +22,15 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'body' => 'required|string',
+            'body' => 'nullable|string',
             'image_url' => 'nullable|mimes:jpg,jpeg,bmp,png',
+            'image_url_2' => 'nullable|mimes:jpg,jpeg,bmp,png',
+            'image_url_3' => 'nullable|mimes:jpg,jpeg,bmp,png',
+            'image_url_4' => 'nullable|mimes:jpg,jpeg,bmp,png',
             'video_url' => 'nullable|mimetypes:video/avi,video/mp4,video/mpeg,video/quicktime',
             'pay_per_view' => 'nullable|boolean',
             'pay_per_view_amount' => 'nullable|numeric',
-            'scheduled_live_time' => 'nullable|date_format',
+            'scheduled_live_time' => 'nullable|date_format:Y-m-d\\TH:i',
             'repost' => 'nullable|boolean',
             'repost_original_id' => 'nullable|ulid',
             'repost_body' => 'nullable|string',

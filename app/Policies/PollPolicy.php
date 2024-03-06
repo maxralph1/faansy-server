@@ -29,7 +29,7 @@ class PollPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return $user->role->title === 'super-admin' || $user->role->title === 'admin' || $user->role->title === 'creator';
     }
 
     /**

@@ -29,7 +29,7 @@ class PostPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return $user->role->title === 'super-admin' || $user->role->title === 'admin' || $user->role->title === 'creator';
     }
 
     /**
@@ -69,7 +69,7 @@ class PostPolicy
      */
 
     /**
-     * Determine whether the user can update the model.
+     * Determine whether the user can repost a post.
      */
     public function repost(User $user, Post $post): bool
     // public function repost(User $user, Post $post): Response
@@ -78,5 +78,21 @@ class PostPolicy
         // return $user->id === $post->user_id
         //     ? Response::allow()
         //     : Response::deny('You cannot repost a post that does not belong to you.');
+    }
+
+    /**
+     * Determine whether the user can make a post featured.
+     */
+    public function feature(User $user, Post $post): bool
+    {
+        return $user->role->title === 'super-admin' || $user->role->title === 'admin';
+    }
+
+    /**
+     * Determine whether the user can pin a post.
+     */
+    public function pin(User $user, Post $post): bool
+    {
+        return $user->id === $post->user_id;
     }
 }

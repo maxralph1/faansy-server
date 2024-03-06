@@ -15,7 +15,6 @@ class ProfileSeeder extends Seeder
     public function run(): void
     {
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -26,7 +25,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -37,7 +35,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -48,7 +45,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -59,7 +55,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -70,7 +65,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -81,7 +75,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -92,7 +85,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -103,7 +95,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -114,7 +105,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -125,7 +115,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -136,7 +125,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -147,7 +135,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -158,7 +145,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -169,7 +155,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -180,7 +165,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -191,7 +175,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),
@@ -202,7 +185,6 @@ class ProfileSeeder extends Seeder
         ]);
 
         Profile::create([
-            'address' => fake()->address(),
             'bio' => fake()->text(100),
             'website_url' => fake()->url(),
             'twitter_account' => fake()->url(),

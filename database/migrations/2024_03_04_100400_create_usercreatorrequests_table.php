@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('collections', function (Blueprint $table) {
-            $table->ulid('id')->primary();
-            $table->foreignUlid('user_id')->constrained();
-            $table->foreignUlid('post_id')->constrained();
+        Schema::create('usercreatorrequests', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -25,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('collections');
+        Schema::dropIfExists('usercreatorrequests');
     }
 };

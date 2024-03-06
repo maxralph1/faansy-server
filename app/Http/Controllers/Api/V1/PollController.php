@@ -38,6 +38,10 @@ class PollController extends Controller
      */
     public function store(StorePollRequest $request)
     {
+        if ($request->user()->cannot('create', Poll::class)) {
+            abort(403);
+        };
+
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request) {
