@@ -16,9 +16,6 @@ class ProfileSeeder extends Seeder
     {
         Profile::create([
             'bio' => fake()->text(100),
-            'website_url' => fake()->url(),
-            'twitter_account' => fake()->url(),
-            'google_account' => fake()->url(),
             'language' => fake()->randomElement($array = array('en-US', 'fr', 'de')),
             'dark_mode' => fake()->boolean(),
             'user_id' => User::where('username', 'faansy')->first()->id,
@@ -26,9 +23,6 @@ class ProfileSeeder extends Seeder
 
         Profile::create([
             'bio' => fake()->text(100),
-            'website_url' => fake()->url(),
-            'twitter_account' => fake()->url(),
-            'google_account' => fake()->url(),
             'language' => fake()->randomElement($array = array('en-US', 'fr', 'de')),
             'dark_mode' => fake()->boolean(),
             'user_id' => User::where('username', 'faansy1')->first()->id,
