@@ -15,6 +15,7 @@ use App\Http\Resources\MessageResource;
 use App\Http\Requests\StoreMessageRequest;
 use App\Http\Requests\UpdateMessageRequest;
 use App\Http\Requests\StoreNewMessageRequest;
+use App\Models\Payperview;
 
 class MessageController extends Controller
 {
@@ -40,35 +41,40 @@ class MessageController extends Controller
     {
         $validated = $request->validated();
 
-        $message = new Message();
-        $message['chat_id'] = $validated['chat_id'];
-        $message['user_id'] = auth()->user()->id;
-        if ($request->body) {
-            $message['body'] = $validated['body'];
-        }
-        if ($request->pay_per_view) {
-            $message['pay_per_view'] = $validated['pay_per_view'];
-        };
-        if ($request->pay_per_view != 0) {
-            if ($request->payperviewamount) {
-                $message['payperviewamount'] = $validated['payperviewamount'];
+        DB::transaction(function () use ($request, $validated) {
+            $message = new Message();
+            $message['chat_id'] = $validated['chat_id'];
+            $message['user_id'] = auth()->user()->id;
+            if ($request->body) {
+                $message['body'] = $validated['body'];
+            }
+            if ($request->pay_per_view) {
+                $message['pay_per_view'] = $validated['pay_per_view'];
             };
-        };
-        if ($request->file('image_url')) {
-            $image_path = $validated['image_url']->store('images/chats');
+            if ($request->pay_per_view != 0) {
+                if ($request->payperviewamount) {
+                    $message['payperviewamount'] = $validated['payperviewamount'];
+                };
+            };
+            if ($request->file('image_url')) {
+                $image_path = $validated['image_url']->store('images/chats');
 
-            $message['image_url'] = $image_path;
-        }
+                $message['image_url'] = $image_path;
+            }
+            if ($request->file('video_url')) {
+                $video_path = $validated['video_url']->store('videos/chats');
 
-        if ($request->file('video_url')) {
-            $video_path = $validated['video_url']->store('videos/chats');
+                $message['video_url'] = $video_path;
+            }
+            $message->save();
 
-            $message['video_url'] = $video_path;
-        }
+            $chat = Chat::find($validated['chat_id']);
+            $chat->update([
+                'updated_at' => now()
+            ]);
 
-        $message->save();
-
-        return new MessageResource($message);
+            return new MessageResource($message);
+        });
     }
 
     /**
@@ -76,95 +82,105 @@ class MessageController extends Controller
      */
     public function show(Message $message)
     {
-        function messagePayPerView($message)
-        {
-            if ($message->pay_per_view == true) {
-                // check viewer wallet balance, if they do not have enough balance, abort!
-                $viewer_sufficient_fund = auth()->user()->wallet->balance >= $message->pay_per_view_amount;
+        // return new MessageResource($message);
 
-                // if they have enough balance, charge the viewer
-                if ($viewer_sufficient_fund) {
-                    $viewer_wallet = Wallet::where('user_id', auth()->user()->id)->first();
-                    $message_owner_wallet = Wallet::where('user_id', $message->user->id)->first();
+        // function messagePayPerView($message)
+        // {
 
-                    DB::transaction(function () use ($viewer_wallet, $message_owner_wallet, $message) {
-                        $viewer_wallet->update([
-                            'balance' => $viewer_wallet->balance - $message->payperviewamount
-                        ]);
-
-                        $message_owner_wallet->update([
-                            'balance' => $message_owner_wallet->balance + (($message->payperviewamount) * (96 / 100))
-                        ]);
-
-                        Transaction::create([
-                            'beneficiary_id' => $message_owner_wallet->user->id,
-                            'transactor_id' => $viewer_wallet->user->id,
-                            'transaction_type' => 'pay_per_view_in_chat',
-                            'amount' => $message->payperviewamount,
-                            'reference_id_to_resource' => $message->id
-                        ]);
-
-                        $transaction = Transaction::create([
-                            'beneficiary_id' => $message_owner_wallet->user->id,
-                            'transactor_id' => $viewer_wallet->user->id,
-                            'transaction_type' => 'commission_on_pay_per_view_in_chat',
-                            'amount' => - ($message->payperviewamount * 100) * (4 / 100),
-                            'reference_id_to_resource' => $message->id,
-                        ]);
-
-                        Notification::create([
-                            'user_id' => $message->user->id,
-                            'notification_type' => 'pay_per_view_in_chat',
-                            'monies_if_any' => $message->payperviewamount * 100,
-                            'reference_id_to_resource' => $message->id,
-                            'transactor_id' => $viewer_wallet->user->id,
-                        ]);
-
-                        Internaltransaction::create([
-                            'transaction_type' => 'commission_on_pay_per_view',
-                            'amount' => ($message->payperviewamount * 100) * (4 / 100),
-                            'reference_id_to_resource' => $message->id,
-                            'reference_id_to_transaction' => $transaction->id,
-                        ]);
-
-                        // Add the viewer as a fan, if they're already not
-                        $already_a_fan = Fanactivity::where([
-                            'creator_id' => $message->user->id,
-                            'fan_id' => $viewer_wallet->user->id
-                        ])->first();
-
-                        if (!$already_a_fan) {
-                            Fanactivity::create([
-                                'fan_id' => $viewer_wallet->user->id,
-                                'creator_id' => $message->user->id,
-                                'amount_paid_in_pay_per_view' => $message->payperviewamount * 100,
-                                'cumulative_amount_spent_on_creator_by_fan' => $message->payperviewamount * 100
-                            ]);
-                        } elseif ($already_a_fan) {
-                            $already_a_fan->update([
-                                'amount_paid_in_pay_per_view' => $message->payperviewamount * 100,
-                                'cumulative_amount_spent_on_creator_by_fan' => $already_a_fan->cumulative_amount_spent_on_creator_by_fan + ($message->payperviewamount * 100),
-                            ]);
-                        }
-
-                        return new MessageResource($message);
-                    });
-                } elseif (!$viewer_sufficient_fund) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Unauthorized. You must have sufficient funds in order to view this content.',
-                    ], 403);
-                }
-            }
-        }
+        // }
 
         // If viewed by post owner
-        if ($message->user->id == auth()->user()->id) {
+        if ($message->user_id == auth()->user()->id) {
             return new MessageResource($message);
         }
 
         // else
-        messagePayPerView($message);
+        // messagePayPerView($message);
+        if ($message->pay_per_view == true) {
+            // check viewer wallet balance, if they do not have enough balance, abort!
+            $viewer_sufficient_fund = auth()->user()->wallet->balance >= $message->payperviewamount;
+
+            // if they have enough balance, charge the viewer
+            if ($viewer_sufficient_fund) {
+                $viewer_wallet = Wallet::where('user_id', auth()->user()->id)->first();
+                $message_owner_wallet = Wallet::where('user_id', $message->user_id)->first();
+
+                DB::transaction(function () use ($viewer_wallet, $message_owner_wallet, $message) {
+                    $viewer_wallet->update([
+                        'balance' => $viewer_wallet->balance - $message->payperviewamount
+                    ]);
+
+                    $message_owner_wallet->update([
+                        'balance' => $message_owner_wallet->balance + (($message->payperviewamount) * (96 / 100))
+                    ]);
+
+                    Transaction::create([
+                        'beneficiary_id' => $message_owner_wallet->user_id,
+                        'transactor_id' => $viewer_wallet->user_id,
+                        'transaction_type' => 'pay_per_view_in_chat',
+                        'amount' => $message->payperviewamount,
+                        'reference_id_to_resource' => $message->id
+                    ]);
+
+                    $transaction = Transaction::create([
+                        'beneficiary_id' => $message_owner_wallet->user_id,
+                        'transactor_id' => $viewer_wallet->user_id,
+                        'transaction_type' => 'commission_on_pay_per_view_in_chat',
+                        'amount' => - ($message->payperviewamount * 100) * (4 / 100),
+                        'reference_id_to_resource' => $message->id,
+                    ]);
+
+                    Notification::create([
+                        'user_id' => $message->user_id,
+                        'notification_type' => 'pay_per_view_in_chat',
+                        'monies_if_any' => $message->payperviewamount * 100,
+                        'reference_id_to_resource' => $message->id,
+                        'transactor_id' => $viewer_wallet->user_id,
+                    ]);
+
+                    Internaltransaction::create([
+                        'transaction_type' => 'commission_on_pay_per_view',
+                        'amount' => ($message->payperviewamount * 100) * (4 / 100),
+                        'reference_id_to_resource' => $message->id,
+                        'reference_id_to_transaction' => $transaction->id,
+                    ]);
+
+                    // Add the viewer as a fan, if they're already not
+                    $already_a_fan = Fanactivity::where([
+                        'creator_id' => $message->user_id,
+                        'fan_id' => $viewer_wallet->user_id
+                    ])->first();
+
+                    if (!$already_a_fan) {
+                        Fanactivity::create([
+                            'fan_id' => $viewer_wallet->user_id,
+                            'creator_id' => $message->user_id,
+                            'amount_paid_in_pay_per_view' => $message->payperviewamount * 100,
+                            'cumulative_amount_spent_on_creator_by_fan' => $message->payperviewamount * 100
+                        ]);
+                    } elseif ($already_a_fan) {
+                        $already_a_fan->update([
+                            'amount_paid_in_pay_per_view' => $already_a_fan->amount_paid_in_pay_per_view + ($message->payperviewamount * 100),
+                            'cumulative_amount_spent_on_creator_by_fan' => $already_a_fan->cumulative_amount_spent_on_creator_by_fan + ($message->payperviewamount * 100),
+                        ]);
+                    }
+
+                    // Payperview::create([
+                    //     'user_id' => $viewer_wallet->user_id,
+                    //     'message_id' => $message->id,
+                    //     'content_type' => 'chat',
+                    //     'payperview_amount_paid' => $message->payperviewamount * 100
+                    // ]);
+
+                    return new MessageResource($message);
+                });
+            } elseif (!$viewer_sufficient_fund) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized. You must have sufficient funds in order to view this content.',
+                ], 403);
+            }
+        }
     }
 
     /**
@@ -212,15 +228,20 @@ class MessageController extends Controller
 
         if (($validated['participator_1_id'] == $validated['participator_2_id']) || (($validated['participator_1_id'] == auth()->user()->id) && ($validated['participator_2_id'] == auth()->user()->id))) abort(409);
 
-        $chat_already_exists = Chat::where([
-            'participator_1_id' => $request->participator_1_id,
-            'participator_2_id' => $request->participator_2_id,
-        ])
-            ->orWhere([
-                'participator_1_id' => $request->participator_2_id,
-                'participator_2_id' => $request->participator_2_id,
-            ])
-            ->first();
+        // $chat_already_exists = Chat::where([
+        //     'participator_1_id' => $request->participator_1_id,
+        //     'participator_2_id' => $request->participator_2_id,
+        // ])
+        //     ->orWhere([
+        //         'participator_1_id' => $request->participator_2_id,
+        //         'participator_2_id' => $request->participator_2_id,
+        //     ])
+        //     ->first();
+
+        $chat_already_exists = Chat::where('slug', $request->participator_1_id . '_' . $request->participator_2_id)
+            ->orWhere('slug', $request->participator_2_id . '_' . $request->participator_1_id)->first();
+
+        // $chat->slug = str()->slug($chat->participator_1_id . '_' . $chat->participator_2_id);
 
         if ($chat_already_exists) {
             $message['body'] = $validated['body'];

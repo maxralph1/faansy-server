@@ -40,6 +40,7 @@ class User extends Authenticatable implements JWTSubject
         'show_subscription_offers',
         'passport_image_url',
         'verified',
+        'verification_material_image_url',
         'dark_mode',
     ];
 
@@ -87,9 +88,14 @@ class User extends Authenticatable implements JWTSubject
      * Model Relationships
      */
 
-    public function blocks(): HasMany
+    public function blocker(): HasMany
     {
-        return $this->hasMany(Block::class);
+        return $this->hasMany(Block::class, 'blocker_id');
+    }
+
+    public function blocked(): HasMany
+    {
+        return $this->hasMany(Block::class, 'blocked_id');
     }
 
     public function bookmarks(): HasMany
@@ -167,9 +173,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Profile::class);
     }
 
-    public function restricts(): HasMany
+    public function restrictor(): HasMany
     {
-        return $this->hasMany(Restrict::class);
+        return $this->hasMany(Restrict::class, 'restrictor_id');
+    }
+
+    public function restrictee(): HasMany
+    {
+        return $this->hasMany(Restrict::class, 'restrictee_id');
     }
 
     public function role(): BelongsTo

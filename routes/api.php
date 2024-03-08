@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\V1\UserverificationController;
 use App\Http\Controllers\Api\V1\UsercreatorrequestController;
 use App\Http\Controllers\Api\V1\FundraisingdonationController;
 use App\Http\Controllers\Api\V1\UserbecomecreatorrequestController;
+// use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,21 @@ Route::controller(AuthController::class)->group(function () {
         'passwordlessSigninRequest'
     );
     Route::post('passwordless-signin/{username}/{token}', 'passwordlessSignin');
+
+    // // Google Auth
+    // Route::get('google/auth/redirect', function () {
+    //     return Socialite::driver('google')->redirect();
+    // });
+
+    // Route::get('google/auth/callback', function () {
+    //     $user = Socialite::driver('google')->user();
+
+    //     // $user->token
+    // });
+
+
+    Route::get('google/auth/redirect', 'redirectToGoogle');
+    Route::get('google/auth/callback', 'handleGoogleCallback');
 });
 
 // Block
@@ -248,21 +264,21 @@ Route::apiResource('userlikes', UserlikeController::class);
 
 // Userbomecreatorrequest
 Route::controller(UserbecomecreatorrequestController::class)->group(function () {
+    // Route::post('user-become-creators', 'store');
     Route::patch('user-become-creators/{userbecomecreatorrequest}/restore', 'restore');
     Route::delete('user-become-creators/{userbecomecreatorrequest}/delete', 'forceDestroy');
-    Route::post('user-become-creators/{userbecomecreatorrequest}/request', 'request');
     Route::put('user-become-creators/{userbecomecreatorrequest}/approve', 'approve');
-    Route::put('user-become-creators/{userbecomecreatorrequest}/reject', 'reject');
+    Route::post('user-become-creators/reject', 'reject');
 });
 Route::apiResource('user-become-creators', UserbecomecreatorrequestController::class);
 
 // Userverification
 Route::controller(UserverificationController::class)->group(function () {
+    // Route::post('user-verifications', 'store');
     Route::patch('user-verifications/{userverification}/restore', 'restore');
     Route::delete('user-verifications/{userverification}/delete', 'forceDestroy');
-    Route::post('user-verifications/{userverification}/request', 'request');
-    Route::put('user-verifications/{userverification}/approve', 'approve');
-    Route::put('user-verifications/{userverification}/reject', 'reject');
+    Route::post('user-verifications/{userverification}/approve', 'approve');
+    Route::post('user-verifications/reject', 'reject');
 });
 Route::apiResource('user-verifications', UserverificationController::class);
 

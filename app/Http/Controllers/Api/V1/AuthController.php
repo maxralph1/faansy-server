@@ -15,13 +15,14 @@ use App\Mail\PasswordlessLoginToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Socialite\Facades\Socialite;
 
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'resetPasswordRequest', 'resetPassword', 'passwordlessSigninRequest', 'passwordlessSignin']]);
+        $this->middleware('auth:api', ['only' => ['logout', 'refresh', 'redirectToGoogle', 'handleGoogleCallback']]);
     }
 
     public function login(Request $request)
@@ -60,6 +61,7 @@ class AuthController extends Controller
             'last_name' => $user->last_name,
             'username' => $user->username,
             'email' => $user->email,
+            'user_image_url' => $user?->user_image_url,
             'verified' => $user->verified,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
@@ -150,6 +152,7 @@ class AuthController extends Controller
             'last_name' => $user->last_name,
             'username' => $user->username,
             'email' => $user->email,
+            'user_image_url' => $user?->user_image_url,
             'verified' => $user->verified,
             'created_at' => now(),
             'updated_at' => now(),
@@ -192,46 +195,48 @@ class AuthController extends Controller
         //     $user->roles()->attach(Role::where('name', 'general')->first());
         // });
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => $role->id
-        ]);
+        DB::transaction(function () use ($request, $role) {
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role_id' => $role->id
+            ]);
 
-        $profile = Profile::create([
-            'user_id' => $user->id
-        ]);
+            $profile = Profile::create([
+                'user_id' => $user->id,
+            ]);
 
-        $wallet = Wallet::create([
-            'user_id' => $user->id,
-            'balance' => 0
-        ]);
+            $wallet = Wallet::create([
+                'user_id' => $user->id,
+                'balance' => 0
+            ]);
 
-        $token = Auth::claims([
-            'id' => $user->id,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'username' => $user->username,
-            'email' => $user->email,
-            'verified' => $user->verified,
-            'created_at' => now(),
-            'updated_at' => now(),
-            'profile' => $profile,
-            'role' => $role->title
-        ])->login($user);
+            $token = Auth::claims([
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'username' => $user->username,
+                'email' => $user->email,
+                'verified' => $user->verified,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'profile' => $profile,
+                'role' => $role->title
+            ])->login($user);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully',
-            // 'user' => $user,
-            'authorization' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ], 201);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User created successfully',
+                // 'user' => $user,
+                'authorization' => [
+                    'token' => $token,
+                    'type' => 'bearer',
+                ]
+            ], 201);
+        });
     }
 
     public function logout()
@@ -334,6 +339,61 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Password has been updated.'
+        ]);
+    }
+
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        $googleUser = Socialite::driver('google')->user();
+
+        $user = User::updateOrCreate([
+            'google_account' => $googleUser->id,
+        ], [
+            'name' => $googleUser->name,
+            'email' => $googleUser->email,
+            'google_token' => $googleUser->token,
+            'google_refresh_token' => $googleUser->refreshToken,
+        ]);
+
+        Auth::login($user);
+
+        if ($user->deleted_at != null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        $user->last_seen = now();
+        $user->save();
+
+        $detailedToken = Auth::claims([
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'username' => $user->username,
+            'email' => $user->email,
+            'user_image_url' => $user?->user_image_url,
+            'verified' => $user->verified,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+            'profile' => $user->profile,
+            'role' => $user->role,
+            'pollresponses' => $user->pollresponses,
+        ])->user();
+
+        return response()->json([
+            'status' => 'success',
+            // 'user' => $user,
+            'authorization' => [
+                'token' => $detailedToken,
+                'type' => 'bearer',
+            ]
         ]);
     }
 }

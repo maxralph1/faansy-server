@@ -36,7 +36,7 @@ class RestrictController extends Controller
     public function store(StoreRestrictRequest $request)
     {
         $already_restricted = Restrict::where([
-            'restrictor_id' => $request->restrictor_id,
+            'restrictor_id' => auth()->user()->id,
             'restrictee_id' => $request->restrictee_id,
         ])->first();
 

@@ -17,6 +17,7 @@ class Chat extends Model
         'participator_1_id',
         'participator_2_id',
         'slug',
+        'updated_at'
     ];
 
     public function participator_1(): BelongsTo

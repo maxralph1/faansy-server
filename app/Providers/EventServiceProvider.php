@@ -10,6 +10,7 @@ use App\Models\Block;
 use App\Models\Message;
 use App\Models\Bookmark;
 use App\Models\Postlike;
+use App\Models\Restrict;
 use App\Models\Postcomment;
 use App\Observers\TipObserver;
 use App\Observers\CardObserver;
@@ -20,6 +21,7 @@ use App\Observers\BlockObserver;
 use App\Observers\MessageObserver;
 use App\Observers\BookmarkObserver;
 use App\Observers\PostlikeObserver;
+use App\Observers\RestrictObserver;
 use Illuminate\Support\Facades\Event;
 use App\Observers\PostcommentObserver;
 use Illuminate\Auth\Events\Registered;
@@ -54,6 +56,7 @@ class EventServiceProvider extends ServiceProvider
         Post::class => [PostObserver::class],
         Postcomment::class => [PostcommentObserver::class],
         Postlike::class => [PostlikeObserver::class],
+        Restrict::class => [RestrictObserver::class],
         Tip::class => [TipObserver::class],
         Userverification::class => [UserverificationObserver::class]
     ];

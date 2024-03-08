@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('streams', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->foreignUlid('user_id')->constrained();
-            $table->enum('media_type', ['video', 'audio']);
+            // $table->enum('media_type', ['video', 'audio']);
+            $table->string('media_type');
             $table->timestamps();
             $table->softDeletes();
         });

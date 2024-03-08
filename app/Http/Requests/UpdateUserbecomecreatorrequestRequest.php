@@ -11,7 +11,7 @@ class UpdateUserbecomecreatorrequestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateUserbecomecreatorrequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'id' => 'required|ulid',
+            'reason_for_rejection' => 'nullable|string'
         ];
     }
 }

@@ -22,7 +22,6 @@ class StoreRestrictRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'restrictor_id' => 'required|ulid',
             'restrictee_id' => 'required|ulid',
         ];
     }

@@ -335,6 +335,13 @@ class PostController extends Controller
                             ]);
                         }
 
+                        // Payperview::create([
+                        //     'user_id' => $viewer_wallet->user->id,
+                        //     'post_id' => $message->id,
+                        //     'content_type' => 'chat',
+                        //     'payperview_amount_paid' => $message->payperviewamount * 100
+                        // ]);
+
                         return new PostResource($post);
                     });
                 } elseif (!$viewer_sufficient_fund) {

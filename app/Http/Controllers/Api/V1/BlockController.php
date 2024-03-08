@@ -34,7 +34,7 @@ class BlockController extends Controller
     public function store(StoreBlockRequest $request)
     {
         $already_blocked = Block::where([
-            'blocker_id' => $request->blocker_id,
+            'blocker_id' => auth()->user()->id,
             'blocked_id' => $request->blocked_id,
         ])->first();
 

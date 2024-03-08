@@ -20,6 +20,11 @@ class Payperview extends Model
         'payperview_amount_paid',
     ];
 
+    public function message(): BelongsTo
+    {
+        return $this->belongsTo(Message::class);
+    }
+
     public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);

@@ -27,8 +27,6 @@ class UserverificationController extends Controller
      */
     public function store(StoreUserverificationRequest $request)
     {
-        $user = User::find(auth()->user()->id);
-
         $already_verified = Userverification::where([
             'requesting_user_id' => auth()->user()->id,
             'approved' => true
@@ -41,21 +39,14 @@ class UserverificationController extends Controller
             ], 409);
         }
 
-        DB::transaction(function () use ($request, $user) {
+        DB::transaction(function () use ($request) {
             $validated = $request->validated();
-
-            $path = $validated['verification_material_image_url']->store('images/users');
-
-            $user->update([
-                'verification_material_image_url' => $path,
-            ]);
 
             $path = $validated['verification_material_image_url']->store('images/users/verifications');
 
             $userverification = Userverification::create([
                 'verification_material_image_url' => $path,
                 'requesting_user_id' => auth()->user()->id,
-                'approving_user_id' => auth()->user()->id,
             ]);
 
             return new UserverificationResource($userverification);
@@ -100,22 +91,6 @@ class UserverificationController extends Controller
      */
 
     /**
-     * Request verification.
-     */
-    public function request(Userverification $userverification)
-    {
-        $userverification = Userverification::where('id', $userverification->id)->first();
-        $userverification->update([
-            'approved' => true,
-            // 'rejected' => false,
-            'approval_time' => now(),
-            'requesting_user_id' => auth()->user()->id
-        ]);
-
-        return new UserverificationResource($userverification);
-    }
-
-    /**
      * Approve verification.
      */
     public function approve(Userverification $userverification)
@@ -123,14 +98,17 @@ class UserverificationController extends Controller
         DB::transaction(function () use ($userverification) {
             $userverification->update([
                 'approved' => true,
-                // 'rejected' => false,
                 'approval_time' => now(),
+                'rejected' => false,
+                'rejection_time' => null,
+                'reason_for_rejection' => null,
                 'approving_user_id' => auth()->user()->id
             ]);
 
             $user = User::where('id', $userverification->requesting_user_id)->first();
 
             $user->update([
+                'verification_material_image_url' => $userverification->verification_material_image_url,
                 'verified' => true
             ]);
 
@@ -141,18 +119,42 @@ class UserverificationController extends Controller
     /**
      * Disapprove verification.
      */
-    public function reject(UpdateUserverificationRequest $request, Userverification $userverification)
+    public function reject(UpdateUserverificationRequest $request)
     {
         $validated = $request->validated();
 
-        $userverification->update([
-            // 'approved' => false,
-            'rejected' => true,
-            'reason_for_rejection' => $validated['reason_for_rejection'],
-            'approval_time' => now(),
-            'approving_user_id' => auth()->user()->id
-        ]);
+        DB::transaction(function () use ($validated, $request) {
 
-        return new UserverificationResource($userverification);
+            $userverification = Userverification::find($validated['id']);
+
+            if ($request->reason_for_rejection) {
+                $userverification->update([
+                    'approved' => false,
+                    'approval_time' => null,
+                    'rejected' => true,
+                    'rejection_time' => now(),
+                    'reason_for_rejection' => $validated['reason_for_rejection'],
+                    'approving_user_id' => auth()->user()->id
+                ]);
+            }
+
+            $userverification->update([
+                'approved' => false,
+                'approval_time' => null,
+                'rejected' => true,
+                'rejection_time' => now(),
+                'reason_for_rejection' => null,
+                'approving_user_id' => auth()->user()->id
+            ]);
+
+            $user = User::where('id', $userverification->requesting_user_id)->first();
+
+            $user->update([
+                'verification_material_image_url' => null,
+                'verified' => false
+            ]);
+
+            return new UserverificationResource($userverification);
+        });
     }
 }

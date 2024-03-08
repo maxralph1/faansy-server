@@ -2,29 +2,34 @@
 
 namespace App\Observers;
 
-use App\Models\User;
+// use App\Models\User;
 use App\Models\Block;
-use App\Http\Requests\StoreBlockRequest;
+// use App\Http\Requests\StoreBlockRequest;
 
 class BlockObserver
 {
     /**
      * Handle the Block "creating" event.
      */
-    public function creating(StoreBlockRequest $request, Block $block): void
+    // public function creating(StoreBlockRequest $request, Block $block): void
+    public function creating(Block $block): void
     {
+        // if (auth()->check()) {
+        //     $user = User::where('id', auth()->user()->id)->first();
+
+        //     $creator_role = auth()->user()->role()->where('title', 'creator')->first();
+
+        //     // !auth()->user()->role()->where('title', $role)->exists()
+
+        //     if (!$creator_role) {
+        //         $block->blocker_id = auth()->id();
+        //     } else {
+        //         $block->blocker_id = $request->blocker_id;
+        //     }
+        // }
+
         if (auth()->check()) {
-            $user = User::where('id', auth()->user()->id)->first();
-
-            $creator_role = auth()->user()->role()->where('title', 'creator')->first();
-
-            // !auth()->user()->role()->where('title', $role)->exists()
-
-            if (!$creator_role) {
-                $block->blocker_id = auth()->id();
-            } else {
-                $block->blocker_id = $request->blocker_id;
-            }
+            $block->blocker_id = auth()->user()->id;
         }
     }
 

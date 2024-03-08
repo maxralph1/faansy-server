@@ -17,9 +17,8 @@ return new class extends Migration
             $table->string('bio')->nullable();
             $table->string('phone_number')->nullable();
             $table->string('website_url')->nullable();
-            $table->string('twitter_account')->nullable();
-            $table->string('google_account')->nullable();
-            $table->enum('language', ['de', 'en-US', 'fr']);
+            // $table->enum('language', ['de', 'en-US', 'fr']);
+            $table->string('language')->default('en-US');
             $table->boolean('dark_mode')->default(false);
             $table->timestamps();
             $table->softDeletes();

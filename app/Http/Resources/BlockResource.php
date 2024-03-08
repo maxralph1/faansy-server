@@ -25,7 +25,7 @@ class BlockResource extends JsonResource
                 'user_image_url' => $this->blocker->user_image_url,
                 'verified' => $this->blocker->verified,
             ],
-            'blocked_user' => [
+            'blocked' => [
                 'id' => $this->blocked->id,
                 'username' => $this->blocked->username,
                 'first_name' => $this->blocked->first_name,
