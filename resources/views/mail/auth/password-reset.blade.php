@@ -3,7 +3,9 @@
 
 You have requested to reset your password. Please click on the button to reset your password. 
 
-<x-mail::button :url="'{{ config('app.url') }}/reset-password/' . $email . '/' . $token " color="error">
+<x-mail::button :url="'https://faansy.com/#/reset-password/' . $email . '/' . $token " color="error">
+{{-- <x-mail::button :url="'https://faansy.com/reset-password/' . $email . '/' . $token " color="error"> --}}
+{{-- <x-mail::button :url="'{{ config('app.url') }}/reset-password/' . $email . '/' . $token " color="error"> --}}
 Reset Password
 </x-mail::button>
 

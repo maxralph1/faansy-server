@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('require_two_factor_authentication')->default(false);
             $table->string('user_image_url')->nullable();
             $table->string('user_background_image_url')->nullable();
             $table->timestamp('last_seen')->nullable();

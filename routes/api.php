@@ -251,6 +251,8 @@ Route::controller(UserController::class)->group(function () {
     Route::get('creators', 'creators');
     Route::get('creators/{user:username}', 'creator');
     Route::post('creators/{user:username}/update', 'update');
+    Route::post('creators/{user:username}/update-profile-photo', 'updateProfilePhoto');
+    Route::post('creators/{user:username}/update-background-photo', 'updateBackgroundPhoto');
     Route::post('creators/{user:username}/verify', 'verifyCreator');
 });
 Route::apiResource('users', UserController::class);

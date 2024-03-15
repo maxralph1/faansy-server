@@ -102,6 +102,44 @@ class UserController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     */
+    public function updateProfilePhoto(UpdateUserRequest $request, User $user)
+    {
+        if ($request->user()->cannot('update', $user)) {
+            abort(403);
+        }
+
+        $validated = $request->validated();
+
+        $user_image_path = $validated['user_image_url']->store('images/users/user-images');
+        $user['user_image_url'] = $user_image_path;
+
+        $user->update();
+
+        return new UserResource($user);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function updateBackgroundPhoto(UpdateUserRequest $request, User $user)
+    {
+        if ($request->user()->cannot('update', $user)) {
+            abort(403);
+        }
+
+        $validated = $request->validated();
+
+        $user_background_image_path = $validated['user_background_image_url']->store('images/users/user-background-images');
+        $user['user_background_image_url'] = $user_background_image_path;
+
+        $user->update();
+
+        return new UserResource($user);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
