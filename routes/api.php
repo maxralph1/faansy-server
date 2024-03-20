@@ -81,6 +81,7 @@ Route::controller(AuthController::class)->group(function () {
 
 
     Route::get('google/auth/redirect', 'redirectToGoogle');
+    // Route::get('Callback', 'handleGoogleCallback');
     Route::get('google/auth/callback', 'handleGoogleCallback');
 });
 
@@ -199,6 +200,7 @@ Route::controller(PostController::class)->group(function () {
     Route::get('posts/featured-posts', 'featuredPosts');
     Route::get('posts/my-posts', 'myPosts');
     Route::post('posts/{post}/pin-post', 'pinPost');
+    Route::get('posts/{post}/show-public', 'showPublic');
     Route::post('posts/{post}', 'update');
 });
 Route::apiResource('posts', PostController::class);

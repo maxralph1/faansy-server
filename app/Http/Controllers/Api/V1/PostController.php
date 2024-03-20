@@ -20,6 +20,7 @@ use App\Http\Resources\PostResource;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Requests\StoreRepostRequest;
+use App\Http\Resources\PostPublicResource;
 use App\Http\Requests\StorePostrepostRequest;
 
 // use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -28,7 +29,7 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['featuredPosts']]);
+        $this->middleware('auth:api', ['except' => ['featuredPosts', 'showPublic']]);
     }
 
     /**
@@ -585,5 +586,13 @@ class PostController extends Controller
     public function searchPost($search_key)
     {
         //
+    }
+
+    /**
+     * Display the specified resource for unauthenticated viewers.
+     */
+    public function showPublic(Post $post)
+    {
+        return new PostPublicResource($post);
     }
 }

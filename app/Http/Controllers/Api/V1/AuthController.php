@@ -22,7 +22,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['only' => ['logout', 'refresh', 'redirectToGoogle', 'handleGoogleCallback']]);
+        $this->middleware('auth:api', ['only' => ['logout', 'refresh']]);
     }
 
     public function login(Request $request)
@@ -354,7 +354,7 @@ class AuthController extends Controller
         $user = User::updateOrCreate([
             'google_account' => $googleUser->id,
         ], [
-            'name' => $googleUser->name,
+            // 'first_name' => $googleUser->name,
             'email' => $googleUser->email,
             'google_token' => $googleUser->token,
             'google_refresh_token' => $googleUser->refreshToken,
