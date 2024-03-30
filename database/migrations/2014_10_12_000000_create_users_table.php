@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('google_email')->nullable();
             $table->string('google_token')->nullable();
             $table->string('google_refresh_token')->nullable();
+            $table->boolean('legal_age')->default(true);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

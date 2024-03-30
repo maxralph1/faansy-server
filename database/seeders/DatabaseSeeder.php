@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ProfileSeeder::class,
             WalletSeeder::class,
-            PostSeeder::class,
+            // PostSeeder::class,
         ]);
     }
 }

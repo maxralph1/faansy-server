@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('livestreamcomments', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('user_id')->constrained();
+            $table->foreignUlid('livestream_id')->constrained();
+            $table->string('body');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

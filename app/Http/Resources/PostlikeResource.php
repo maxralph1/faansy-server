@@ -22,6 +22,8 @@ class PostlikeResource extends JsonResource
                 'username' => $this->user->username,
                 'first_name' => $this->user->first_name,
                 'last_name' => $this->user->last_name,
+                'user_image_url' => $this->post->user->user_image_url,
+                'verified' => $this->post->user->verified,
             ],
             'post' => [
                 'id' => $this->post->id,

@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('livestreams', function (Blueprint $table) {
+        Schema::create('fans', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->foreignUlid('fanlist_id')->constrained();
             $table->foreignUlid('user_id')->constrained();
-            // $table->enum('media_type', ['video', 'audio']);
-            $table->string('media_type');
+            $table->string('title');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('livestreams');
+        Schema::dropIfExists('fans');
     }
 };

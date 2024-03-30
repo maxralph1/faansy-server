@@ -20,7 +20,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['except' => ['showPublic']]);
     }
 
     /**
@@ -204,6 +204,14 @@ class UserController extends Controller
 
         $user->update(['verified' => true]);
 
+        return new UserResource($user);
+    }
+
+    /**
+     * Display the specified resource for unauthenticated viewers.
+     */
+    public function showPublic(User $user)
+    {
         return new UserResource($user);
     }
 }

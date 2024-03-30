@@ -251,6 +251,7 @@ Route::apiResource('tips', TipController::class);
 Route::controller(UserController::class)->group(function () {
     Route::get('my-profile', 'myProfile');
     Route::get('creators', 'creators');
+    Route::get('creators/{user:username}/show-public', 'showPublic');
     Route::get('creators/{user:username}', 'creator');
     Route::post('creators/{user:username}/update', 'update');
     Route::post('creators/{user:username}/update-profile-photo', 'updateProfilePhoto');
